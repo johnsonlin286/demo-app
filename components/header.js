@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { AppContext } from '../context';
+
 import { Icon } from '@iconify/react';
 import arrowBack from '@iconify/icons-ion/arrow-back';
 import PropTypes from 'prop-types';
@@ -16,6 +19,8 @@ const defaultProps = {
 };
 
 const Header = ({ fixed, backBtn, title }) => {
+  const context = useContext(AppContext);
+
   return (
     <div className={fixed ? 'fixed top-0 right-0 left-0' : ''}>
       <div className={`${fixed ? 'md:w-7/12 lg:w-6/12 xl:w-5/12' : ''} flex justify-between items-center bg-white shadow rounded-b-md py-3 px-4 mx-auto`}>
@@ -23,9 +28,9 @@ const Header = ({ fixed, backBtn, title }) => {
           {backBtn && <Icon icon={arrowBack} className="text-lg mr-2"/>}
           <h1 className="text-xl font-semibold">{title}</h1>
         </div>
-        <Link href={"#"} className="text-sky-300 hover:underline order-last">
+        <button className="text-sky-300 hover:underline order-last" onClick={() => context.setAbout(true)}>
           About
-        </Link>
+        </button>
       </div>
     </div>
   );

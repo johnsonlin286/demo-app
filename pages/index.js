@@ -7,6 +7,7 @@ import PhotoPreview from "../components/photo-preview";
 
 export default function Home() {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  
   const renderGalleryItem = () => {
     const arr = [];
     for (let i = 0; i < 10; i++) {

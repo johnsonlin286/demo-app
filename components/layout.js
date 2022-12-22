@@ -1,5 +1,9 @@
+import { useContext, useState } from 'react';
+import { AppContext } from '../context';
+
 import Head from 'next/head'
 import BottomNav from './bottom-nav';
+import BottomSheet from './bottomsheet';
 import PropTypes from 'prop-types';
 
 const propTypes = {};
@@ -7,6 +11,8 @@ const propTypes = {};
 const defaultProps = {};
 
 const Layout = ({ children }) => {
+  const context = useContext(AppContext);
+  
   return (
     <div>
       <Head>
@@ -19,6 +25,13 @@ const Layout = ({ children }) => {
           children
         }
         <BottomNav/>
+        <BottomSheet 
+          open={context.about}
+          height="100%"
+          onDismiss={() => context.setAbout(false)}
+        >
+          About
+        </BottomSheet>
       </main>
     </div>
   );

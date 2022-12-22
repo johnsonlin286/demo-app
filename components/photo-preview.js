@@ -19,10 +19,10 @@ const PhotoPreview = () => {
         </div>
         <img src="https://via.placeholder.com/180" alt="placeholder" className="w-full"/>
       </div>
-      <div className="py-2">
+      <div className="flex w-full items-center py-2">
         <ButtonLike onClick={() => console.log('like button toggle')}/>
       </div>
-      <p className="py-2">
+      <p>
         lorem ipsum dolor sit amet.
       </p>
     </>
