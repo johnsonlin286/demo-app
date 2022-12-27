@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
 import { AppContext } from '../context';
+import { useRouter } from 'next/router';
 
 import Head from 'next/head'
 import BottomNav from './bottom-nav';
@@ -11,6 +12,7 @@ const propTypes = {};
 const defaultProps = {};
 
 const Layout = ({ children }) => {
+  const router = useRouter();
   const context = useContext(AppContext);
   
   return (
@@ -24,7 +26,9 @@ const Layout = ({ children }) => {
         {
           children
         }
-        <BottomNav/>
+        {
+          router.asPath !== '/signin' && <BottomNav/>
+        }
         <BottomSheet 
           open={context.about}
           height="100%"

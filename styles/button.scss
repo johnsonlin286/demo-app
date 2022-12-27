@@ -1,0 +1,19 @@
+.btn {
+  background-color: #38bdf8;
+  border-color: #38bdf8;
+  color: white;
+  &.disabled {
+    background-color: #d1d5db;
+    border-color: #d1d5db;
+    color: white;
+    pointer-events: none;
+  }
+  &-outline {
+    background-color: white;
+    color: #38bdf8;
+    &.disabled {
+      background-color: white;
+      color: #d1d5db;
+    }
+  }
+}

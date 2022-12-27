@@ -1,5 +1,9 @@
 .bottom-sheet-custom-style {
+  [data-rsbs-backdrop] {
+    z-index: 20;
+  }
   [role="dialog"] {
+    z-index: 20;
     margin: 0 auto;
     @media (min-width: 768px) {
       width: 58.333333%;

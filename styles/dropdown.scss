@@ -1,0 +1,15 @@
+.dropdown {
+  &-nav {
+    min-width: 160px;
+    right: 0;
+  }
+  &-caret {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid white;
+    right: 10px;
+  }
+}
