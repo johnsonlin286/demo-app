@@ -7,8 +7,8 @@ import { Icon } from '@iconify/react';
 import homeIcon from '@iconify/icons-ion/home';
 import addCircle from '@iconify/icons-ion/add-circle';
 import Avatar from './avatar';
-import PropTypes from 'prop-types';
 import Dropdown from './dropdown';
+import PropTypes from 'prop-types';
 
 const propTypes = {};
 
@@ -31,7 +31,7 @@ const BottomNav = () => {
           </Link>
         </div>
         <div className="flex-1 flex justify-center items-center">
-          <Link href={user ? '/' : '/signin'} className="inline-block text-sky-300">
+          <Link href={user ? '/create-post' : '/signin'} className="inline-block text-sky-300">
             <Icon icon={addCircle} width="38"/>
           </Link>
         </div>

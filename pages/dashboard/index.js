@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { API } from '../../endpoints/api';
-import { GET_PHOTO } from "../../endpoints/url";
+import { PHOTOS } from "../../endpoints/url";
 import Header from "../../components/header";
 import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
@@ -28,7 +28,7 @@ const Dashboard = () => {
   const fetchUserPhotos = async (props) => {
     try {
       setFetchData(true);
-      const response = await API.get(GET_PHOTO + `/user/${user._id}`);
+      const response = await API.get(PHOTOS + `/user/${user._id}`);
       setData(response.data.data);
       setFetchData(false);
     } catch (error) {

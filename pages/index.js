@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { API } from '../endpoints/api';
-import { GET_PHOTO } from '../endpoints/url';
+import { PHOTOS } from '../endpoints/url';
 import Header from "../components/header";
 import GalleryGrid from "../components/gallery-grid";
 import ThumbnailImg from "../components/thumbnail-img";
@@ -23,7 +23,7 @@ export default function Home() {
   const fetchPhotos = async () => {
     try {
       setFetchData(true);
-      const response = await API.get(GET_PHOTO);
+      const response = await API.get(PHOTOS);
       setData(response.data.data);
       setFetchData(false);
     } catch (error) {
@@ -37,7 +37,7 @@ export default function Home() {
     setShowBottomSheet(true);
     try {
       setFetchPhoto(true);
-      const response = await API.get(GET_PHOTO + `/${photoId}`);
+      const response = await API.get(PHOTOS + `/${photoId}`);
       setPhoto(response.data.data);
       setFetchPhoto(false);
     } catch (error) {

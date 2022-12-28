@@ -1,4 +1,5 @@
 // import ButtonLike from './button-like';
+import Avatar from './avatar';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -14,9 +15,7 @@ const PhotoPreview = ({ data }) => {
         {
           data.user ? (
             <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black">
-              <div className="w-9 h-9 border-2 border-white rounded-full overflow-hidden">
-                <img src="https://via.placeholder.com/100" alt="placeholder" className="max-w-full"/>
-              </div>
+              <Avatar size="sm" shape="circle" border alt={data.user.name}/>
               <p className="text-lg font-medium text-white ml-2">{data.user.name}</p>
             </div>
           ) : null

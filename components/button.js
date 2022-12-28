@@ -29,13 +29,13 @@ const Button = ({ type, size, color, outline, route, onClick, disabled, loading,
     <>
       {
         type === 'button' ? (
-          <button className={`btn${outline ? ' btn-outline' : ''}${disabled ? ' disabled' : ''} ${size === 'sm' ? 'py-2 px-3' : size === 'lg' ? 'py-6 px-7' : 'py-4 px-5'} border rounded-lg font-medium`} disabled={disabled} onClick={onClick}>
+          <button className={`btn${outline ? ' btn-outline' : ''}${disabled ? ' disabled' : ''} ${size === 'sm' ? 'py-2 px-3' : size === 'lg' ? 'py-4 px-6' : 'py-3 px-5'} border rounded-lg font-medium`} disabled={disabled} onClick={onClick}>
             {
               loading ? <><Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> Processing...</> : children
             }
           </button>
         ) : (
-          <Link href={route} className={`btn${outline ? ' btn-outline' : ''}${disabled ? ' disabled' : ''} ${size === 'sm' ? 'py-2 px-3' : size === 'lg' ? 'py-6 px-7' : 'py-4 px-5'} border rounded-lg font-medium`}>
+          <Link href={route} className={`btn${outline ? ' btn-outline' : ''}${disabled ? ' disabled' : ''} ${size === 'sm' ? 'py-2 px-3' : size === 'lg' ? 'py-4 px-6' : 'py-3 px-5'} border rounded-lg font-medium`}>
             {
               loading ? <><Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> Processing...</> : children
             }
