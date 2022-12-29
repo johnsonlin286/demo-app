@@ -1,5 +1,7 @@
-// import ButtonLike from './button-like';
 import Avatar from './avatar';
+import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import ButtonLike from './button-like';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -9,6 +11,22 @@ const propTypes = {
 const defaultProps = {};
 
 const PhotoPreview = ({ data }) => {
+  const [liked, setLiked] = useState(false);
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const user = Cookies.get('user');
+    if (user) setUser(JSON.parse(user));
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const likes = [...data.likes];
+      const isLiked = likes.filter(item => item.user === user._id);
+      if (isLiked.length > 0) setLiked(true);
+    }
+  }, [data, user]);
+
   return (
     <>
       <div className="relative rounded-lg overflow-hidden">
@@ -22,10 +40,21 @@ const PhotoPreview = ({ data }) => {
         }
         <img src={data.imageUrl} alt={data.caption} className="w-full"/>
       </div>
-      <div className="flex w-full items-center py-2">
-        {/* <ButtonLike onClick={() => console.log('like button toggle')}/> */}
-      </div>
-      <p className="pl-2 italic">
+      {
+        user && data ? (
+          <div className="flex w-full items-center pt-2">
+            <ButtonLike value={liked} onClick={() => console.log('like button toggle')}/>
+            {
+              data.likes.length > 0 && (
+                <p className="font-medium text-sm ml-2">
+                  {`Liked by ${liked ? 'you' : ''} ${liked && data.likes.length > 1 ? 'and' : ''} ${liked ? data.likes.length > 1 ? `${data.likes.length - 1} people` : '' : `${data.likes.length} people`}`}
+                </p>
+              )
+            }
+          </div>
+        ) : null
+      }
+      <p className="pt-2 pl-2 italic">
         {data.caption}
       </p>
     </>

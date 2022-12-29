@@ -8,6 +8,7 @@ import BottomSheet from "../components/bottomsheet";
 import PhotoPreview from "../components/photo-preview";
 import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
+import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 
 export default function Home() {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -17,14 +18,16 @@ export default function Home() {
   const [fetchPhoto, setFetchPhoto] = useState(false);
 
   useEffect(() => {
-    fetchPhotos();
-  }, []);
+    if (!data) fetchPhotos();
+  }, [data]);
 
   const fetchPhotos = async () => {
     try {
       setFetchData(true);
       const response = await API.get(PHOTOS);
-      setData(response.data.data);
+      if (response.data.data) {
+        setData(response.data.data);
+      }
       setFetchData(false);
     } catch (error) {
       setFetchData(false);
@@ -49,18 +52,31 @@ export default function Home() {
   return (
     <div className="home">
       <Header fixed title={'Home'}/>
-      <div className={`${fetchData ? 'flex min-w-full min-h-screen  justify-center items-center ' : ''}pt-14 pb-20`}>
-        {
-          fetchData ? <><Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...</> : null
-        }
-        <GalleryGrid>
-          {
-            data && data.length > 0 ? data.map((item, i) => (
-              <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} onClick={() => fetchPhotoDetail(item._id)}/>
-            )) : null
-          }
-        </GalleryGrid>
-      </div>
+      {
+        fetchData ? (
+          <div className="flex min-w-full min-h-screen justify-center items-center pt-14 pb-20">
+            <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+          </div>
+        ) : null
+      }
+      {
+        data && data.length > 0 ? (
+          <div className="pt-14 pb-20">
+            <GalleryGrid>
+              {
+                data.map((item, i) => (
+                  <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} onClick={() => fetchPhotoDetail(item._id)}/>
+                ))
+              }
+            </GalleryGrid>
+          </div>
+        ) : (
+          <div className="flex flex-col min-w-full min-h-screen justify-end items-center pt-14 pb-20">
+            <p>No post found! Start post your image here...</p>
+            <Icon icon={arrowDownOutline} width="38" height="38"/>
+          </div>
+        )
+      }
       <BottomSheet
         open={showBottomSheet}
         onDismiss={() => setShowBottomSheet(false)}

@@ -2,18 +2,24 @@ import { Icon } from '@iconify/react';
 import heartOutline from '@iconify/icons-ion/heart-outline';
 import heartIcon from '@iconify/icons-ion/heart';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const propTypes = {
+  value: PropTypes.bool,
   onClick: PropTypes.func,
 };
 
 const defaultProps = {
+  value: false,
   onClick: () => null,
 };
 
-const ButtonLike = ({ onClick }) => {
+const ButtonLike = ({ value, onClick }) => {
   const [liked, setLiked] = useState(false);
+
+  useEffect(() => {
+    setLiked(value);
+  }, [value]);
 
   const onLikeHandler = () => {
     setLiked(!liked);

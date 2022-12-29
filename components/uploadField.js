@@ -97,7 +97,7 @@ const UploadField = ({ error, onChange }) => {
         imgPreview ? <img src={imgPreview} className="h-full"/> : (
           <div>
             <p className="text-center">Drop image here or</p>
-            <input type="file" onChange={onChangeHandler}/>
+            <input type="file" onChange={onChangeHandler} accept="image/jpeg,image/png"/>
             {
               errMsg && <p className="text-xs text-center text-red-600">{errMsg}</p>
             }

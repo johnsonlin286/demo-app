@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
           children
         }
         {
-          router.asPath !== '/signin' && <BottomNav/>
+          router.asPath !== '/signin' && router.asPath !== '/signout' && <BottomNav/>
         }
         <BottomSheet 
           open={context.about}

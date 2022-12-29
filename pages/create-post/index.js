@@ -17,7 +17,6 @@ const CreatePost = () => {
   const [formState, setFormState] = useState({
     imageUrl: '',
     caption: '',
-    user: '',
   });
   const [imageFile, setImageFile] = useState();
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -28,14 +27,6 @@ const CreatePost = () => {
     let user = Cookies.get('user');
     if (!user) {
       router.push('/signin');
-    } else {
-      user = JSON.parse(user);
-      setFormState((prev) => (
-        {
-          ...prev,
-          user: user._id,
-        }
-      ));
     };
   }, []);
 
@@ -48,9 +39,6 @@ const CreatePost = () => {
     if (!formState.caption) {
       err.caption = 'required!';
     } else delete err.caption;
-    if (!formState.user) {
-      err.user = 'No User ID';
-    } else delete err.user;
     setErrMsg(err);
     if (Object.keys(err).length > 0) {
       return;
