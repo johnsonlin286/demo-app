@@ -61,7 +61,7 @@ export default function Home() {
       }
       {
         data && data.length > 0 ? (
-          <div className="pt-14 pb-20">
+          <div className="px-1 md:px-0 pt-14 pb-20">
             <GalleryGrid>
               {
                 data.map((item, i) => (

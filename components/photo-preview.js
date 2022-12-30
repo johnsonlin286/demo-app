@@ -4,16 +4,22 @@ import { useRouter } from 'next/router';
 import Avatar from './avatar';
 import Cookies from 'js-cookie';
 import ButtonLike from './button-like';
+import { Icon } from '@iconify/react';
+import trashBin from '@iconify/icons-ion/trash-bin';
 import PropTypes from 'prop-types';
 
 const propTypes = {
   data: PropTypes.object,
+  canDelete: PropTypes.bool,
+  deleteCallback: PropTypes.func,
 };
 
 const defaultProps = {
+  canDelete: false,
+  deleteCallback: () => null,
 };
 
-const PhotoPreview = ({ data }) => {
+const PhotoPreview = ({ data, canDelete, deleteCallback }) => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [itemData, setItemData] = useState();
@@ -31,6 +37,12 @@ const PhotoPreview = ({ data }) => {
       const likes = [...itemData.likes];
       const isLiked = likes.filter(item => item.user === user._id);
       if (isLiked.length > 0) setLiked(true);
+    }
+    if (data && user) {
+      const authorId = data.user;
+      if (authorId === user._id) {
+        console.log('is owner of the post');
+      }
     }
   }, [data, user]);
 
@@ -95,10 +107,19 @@ const PhotoPreview = ({ data }) => {
           itemData && <img src={itemData.imageUrl} alt={itemData.caption} className="w-full"/>
         }
       </div>
-      <div className="flex w-full items-center pt-2">
-        <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
+      <div className="flex w-full justify-between items-center pt-2">
+        <div className="flex items-center">
+          <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
+          {
+            itemData && itemData.likes.length > 0 && <p className="font-medium text-sm ml-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
+          }
+        </div>
         {
-          itemData && itemData.likes.length > 0 && <p className="font-medium text-sm ml-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
+          canDelete && (
+            <button title="Delete post" onClick={() => deleteCallback(itemData._id)}>
+              <Icon icon={trashBin} width="20" />
+            </button>
+          )
         }
       </div>
       <p className="pt-2 pl-2 italic">
