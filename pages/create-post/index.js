@@ -13,7 +13,6 @@ import Button from '../../components/button';
 
 const CreatePost = () => {
   const router = useRouter();
-  const [user, setUser] = useState();
   const [formState, setFormState] = useState({
     imageUrl: '',
     caption: '',
