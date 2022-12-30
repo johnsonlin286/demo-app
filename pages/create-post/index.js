@@ -88,7 +88,7 @@ const CreatePost = () => {
   return (
     <div className="create-post">
       <Header backBtn title="New Post"/>
-      <div className="pt-4">
+      <div className="px-5 md:px-0 pt-4 pb-20">
         <form onSubmit={formValidation}>
           <UploadField error={errMsg.imageUrl || ''} onChange={(file) => setImageFile(file)}/>
           <Textarea id="inputCaption" label="Caption" placeholder="Add your nice caption here..." error={errMsg.caption || ''} className="py-4" onChange={(val) => {

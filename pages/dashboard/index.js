@@ -8,6 +8,7 @@ import PhotoPreview from "../../components/photo-preview";
 import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
+import Avatar from "../../components/avatar";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -40,7 +41,16 @@ const Dashboard = () => {
   
   return (
     <div className="dashboard">
-      <Header backBtn backRoute={'/'} fixed title="Dashboard"/>
+      <Header backBtn backRoute={'/'} fixed title={user && user.name}/>
+      <div className="flex px-5 md:px-0 pt-16 pb-4">
+        <Avatar shape="circle" size="lg" border alt={user && user.name}/>
+        <div className="flex flex-col flex-1 justify-center items-center text-2xl">
+          {data && data.length || 0}
+          <p>{`Post${data && data.length > 1 ? 's' : ''}`}</p>
+        </div>
+        <div className="flex-1"/>
+        <div className="flex-1"/>
+      </div>
       {
         fetchData ? (
           <div className="flex min-w-full min-h-screen justify-center items-center pt-14 pb-20">
@@ -50,7 +60,7 @@ const Dashboard = () => {
       }
       {
         data && data.length > 0 ? (
-          <div className="pt-14 pb-20">
+          <div className="px-5 md:px-0 pb-20">
             {
               data.map((item, i) => (
                 <div key={i}>

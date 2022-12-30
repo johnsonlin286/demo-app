@@ -26,7 +26,7 @@ const Header = ({ fixed, backBtn, backRoute, title }) => {
 
   return (
     <div className={fixed ? 'fixed top-0 right-0 left-0 z-10' : ''}>
-      <div className={`${fixed ? 'md:w-7/12 lg:w-6/12 xl:w-5/12' : ''} flex justify-between items-center bg-white shadow rounded-b-md py-3 px-4 mx-auto`}>
+      <div className={`${fixed ? 'md:w-7/12 lg:w-6/12 xl:w-4/12' : ''} flex justify-between items-center bg-white shadow rounded-b-md py-3 px-4 mx-auto`}>
         <div className="flex">
           {backBtn && <button onClick={() => backRoute ? router.push(backRoute) : router.back()}><Icon icon={arrowBack} width={28} className="mr-2"/></button>}
           <h1 className="text-xl font-semibold">{title}</h1>

@@ -24,7 +24,7 @@ const BottomNav = () => {
 
   return (
     <div className="fixed right-0 bottom-0 left-0 z-10">
-      <nav className="md:w-7/12 lg:w-6/12 xl:w-5/12 flex justify-between items-center bg-white shadow-[0px_-1px_3px_0px_rgba(0,0,0,0.3)] rounded-t-md p-4 mx-auto">
+      <nav className="md:w-7/12 lg:w-6/12 xl:w-4/12 flex justify-between items-center bg-white shadow-[0px_-1px_3px_0px_rgba(0,0,0,0.3)] rounded-t-md p-4 mx-auto">
         <div className="flex-1 flex justify-start items-center">
           <Link href={'/'} className="text-sky-300">
             <Icon icon={homeIcon} width="38"/>

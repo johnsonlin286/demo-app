@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { likePost, unlikePost } from '../services/like-post';
+import { useRouter } from 'next/router';
 import Avatar from './avatar';
 import Cookies from 'js-cookie';
 import ButtonLike from './button-like';
@@ -13,6 +14,7 @@ const defaultProps = {
 };
 
 const PhotoPreview = ({ data }) => {
+  const router = useRouter();
   const [user, setUser] = useState();
   const [itemData, setItemData] = useState();
   const [liked, setLiked] = useState(false);
@@ -33,6 +35,10 @@ const PhotoPreview = ({ data }) => {
   }, [data, user]);
 
   const onLikeHandler = async (status) => {
+    if (!user) {
+      router.push('/signin');
+      return;
+    }
     setLiked(status);
     if (!status) {
       const likesData = itemData.likes;
@@ -89,16 +95,12 @@ const PhotoPreview = ({ data }) => {
           itemData && <img src={itemData.imageUrl} alt={itemData.caption} className="w-full"/>
         }
       </div>
-      {
-        user && itemData ? (
-          <div className="flex w-full items-center pt-2">
-            <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
-            {
-              itemData.likes.length ? <p className="font-medium text-sm ml-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p> : ''
-            }
-          </div>
-        ) : null
-      }
+      <div className="flex w-full items-center pt-2">
+        <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
+        {
+          itemData && itemData.likes.length > 0 && <p className="font-medium text-sm ml-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
+        }
+      </div>
       <p className="pt-2 pl-2 italic">
         {itemData && itemData.caption}
       </p>
