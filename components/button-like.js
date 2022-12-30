@@ -1,20 +1,23 @@
+import { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
 import heartOutline from '@iconify/icons-ion/heart-outline';
 import heartIcon from '@iconify/icons-ion/heart';
+import loadingIcon from '@iconify/icons-mdi/loading';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 
 const propTypes = {
   value: PropTypes.bool,
+  disabled: PropTypes.bool,
   onClick: PropTypes.func,
 };
 
 const defaultProps = {
   value: false,
+  disabled: false,
   onClick: () => null,
 };
 
-const ButtonLike = ({ value, onClick }) => {
+const ButtonLike = ({ value, disabled, onClick }) => {
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
@@ -23,13 +26,16 @@ const ButtonLike = ({ value, onClick }) => {
 
   const onLikeHandler = () => {
     setLiked(!liked);
-    onClick();
+    onClick(!liked);
   }
 
   return (
-    <button onClick={onLikeHandler}>
+    <button onClick={onLikeHandler} disabled={disabled} className="flex justify-center items-center">
       {
-        liked ? <Icon icon={heartIcon} width="32" className="text-red-600" /> : <Icon icon={heartOutline} width="32" />
+        disabled && <Icon icon={loadingIcon} width="18" className="absolute inline-block animate-spin text-gray-300 align-text-top"/>
+      }
+      {
+        liked ? <Icon icon={heartIcon} width="32" className={`text-red-600${disabled ? ' opacity-20': ''}`} /> : <Icon icon={heartOutline} width="32" className={disabled ? 'opacity-20' : ''} />
       }
     </button>
   );
