@@ -9,12 +9,16 @@ import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 import Avatar from "../../components/avatar";
+import Modal from "../../components/modal";
+import Button from "../../components/button";
 
 const Dashboard = () => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [data, setData] = useState();
   const [fetchData, setFetchData] = useState(true);
+  const [deleteId, setDeleteId] = useState();
+  const [showConfirm, setShowConfirm] = useState(false);
   const [onRemove, setOnRemove] = useState(false);
 
   useEffect(() => {
@@ -41,27 +45,31 @@ const Dashboard = () => {
   };
 
   const showConfirmWindow = (photoId) => {
-    let confirmWindow = window.confirm('Are you sure want to delete this post?');
-    if (!confirmWindow) {
-      return
-    }
-    deleteUserPhoto(photoId);
+    setDeleteId(photoId);
+    setShowConfirm(true);
   }
 
-  const deleteUserPhoto = async (photoId) => {
+  const hideConfirmWindow = () => {
+    setShowConfirm(false);
+  }
+
+  const deleteUserPhoto = async () => {
     setOnRemove(true);
-    await API.delete(PHOTOS + `/${photoId}`)
+    await API.delete(PHOTOS + `/${deleteId}`)
       .then((response) => {
         const allPhoto = data;
-        const photo = data.find(item => item._id === photoId);
+        const photo = data.find(item => item._id === deleteId);
         const indexPhoto = allPhoto.indexOf(photo);
         allPhoto.splice(indexPhoto, 1);
         setData([...allPhoto]);
+        setDeleteId();
         setOnRemove(false);
+        hideConfirmWindow();
       })
       .catch((error) => {
         console.log(error);
         setOnRemove(false);
+        hideConfirmWindow();
       });
   }
   
@@ -89,7 +97,7 @@ const Dashboard = () => {
           data && data.length > 0 ? (
             <div className="px-5 md:px-0">
               {
-                data.map((item, i) => (
+                data.map((_, i) => (
                   <div className="border-b pb-4 mb-4" key={i}>
                     <PhotoPreview data={data[i]} canDelete deleteCallback={showConfirmWindow}/>
                   </div>
@@ -104,6 +112,15 @@ const Dashboard = () => {
           )
         }
       </div>
+      <Modal show={showConfirm} size="sm" onDismiss={hideConfirmWindow}>
+        <p className="mb-2">Are you sure want to delete this photo?</p>
+        <div className="inline-block w-1/2 pr-1">
+          <Button size="sm" outline block disabled={onRemove} loading={onRemove} onClick={deleteUserPhoto}>Yes</Button>
+        </div>
+        <div className="inline-block w-1/2 pl-1">
+          <Button size="sm" block disabled={onRemove} onClick={hideConfirmWindow}>No</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

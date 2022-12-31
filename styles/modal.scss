@@ -1,0 +1,50 @@
+.backdrop {
+  transition: opacity .3s linear;
+  animation: fade-in .3s forwards;
+  &.close {
+    animation: fade-out .5s forwards;
+  }
+}
+.modal {
+  transition: opacity .3s linear, top .3s linear;
+  animation: fade-in .5s forwards, pull-up .3s forwards;
+  &.close {
+    animation: fade-out .3s forwards, pull-down .3s forwards;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+};
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pull-up {
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 50%;
+  }
+}
+
+@keyframes pull-down {
+  0% {
+    top: 50%;
+  }
+  100% {
+    top: 0%;
+  }
+}

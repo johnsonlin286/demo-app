@@ -60,7 +60,7 @@ export default function PageSignin() {
       const response = await API.post(SIGNIN, formState);
       const data = response.data.data;
       const expireTime = new Date();
-      expireTime.setTime(expireTime.getTime() + 1 * 3600 * 1000);
+      expireTime.setTime(expireTime.getTime() + 24 * 3600 * 1000);
       Cookies.set('auth_token', data.token, { expires: expireTime });
       Cookies.set('user', JSON.stringify(data.user), { expires: expireTime });
       setLoading(false);
