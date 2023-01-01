@@ -5,7 +5,7 @@ import 'react-spring-bottom-sheet/dist/style.css'
 
 const propTypes = {
   open: PropTypes.bool,
-  height: PropTypes.oneOf(['50%', '100%', 'auto']),
+  height: PropTypes.oneOf(['50', '80', '100', 'auto']),
   onDismiss: PropTypes.func,
 };
 
@@ -22,9 +22,11 @@ const BottomSheet = ({ open, height, onDismiss, children }) => {
       open={open}
       onDismiss={onDismiss}
       snapPoints={({ minHeight, maxHeight }) => {
-        if (height === '50%') {
+        if (height === '50') {
           return maxHeight / 2;
-        } else if (height === '100%') {
+        } else if (height === '80') {
+          return maxHeight * (80/100)
+        } else if (height === '100') {
           return maxHeight;
         } else return minHeight;
       }}

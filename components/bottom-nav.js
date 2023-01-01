@@ -38,7 +38,7 @@ const BottomNav = () => {
         <div className="flex-1 flex justify-end items-center">
           {
             user ? (
-              <Dropdown menu={[{label: 'Dashboard', router: '/dashboard'}, {label: 'Sign Out', router: '/signout'}]}>
+              <Dropdown top menu={[{label: 'Dashboard', link: '/dashboard'}, {label: 'Sign Out', link: '/signout'}]}>
                 <Avatar alt={user.name} shape="circle" border/>
               </Dropdown>
             ) : <Button type="link" route={"/signin"} size="sm" color="primary">Sign in</Button>

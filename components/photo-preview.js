@@ -6,7 +6,11 @@ import Cookies from 'js-cookie';
 import ButtonLike from './button-like';
 import { Icon } from '@iconify/react';
 import trashBin from '@iconify/icons-ion/trash-bin';
+import ellipsisVertical from '@iconify/icons-ion/ellipsis-vertical';
+import pencilIcon from '@iconify/icons-ion/pencil';
 import PropTypes from 'prop-types';
+import Dropdown from './dropdown';
+import Link from 'next/link';
 
 const propTypes = {
   data: PropTypes.object,
@@ -115,11 +119,32 @@ const PhotoPreview = ({ data, canDelete, deleteCallback }) => {
           }
         </div>
         {
-          canDelete && (
-            <button title="Delete post" onClick={() => deleteCallback(itemData._id)}>
-              <Icon icon={trashBin} width="20" />
-            </button>
-          )
+          // itemData && canDelete ? (
+          //   <Dropdown
+          //     menu={[
+          //       {
+          //         label: 'Edit',
+          //         icon: pencilIcon,
+          //         link: `/edit-post?id=${itemData._id}`,
+          //         className: ' text-sky-400'
+          //       },
+          //       {
+          //         label: 'Delete',
+          //         icon: trashBin,
+          //         onClick: () => deleteCallback(itemData._id),
+          //         className: ' text-red-600'
+          //       }
+          //     ]}
+          //   >
+          //     <span className="inline-block px-3">
+          //       <Icon icon={ellipsisVertical} />
+          //     </span>
+          //   </Dropdown>
+          // ) : (
+          //   <Link href={`/edit-post?id=${itemData ? itemData._id : ''}`} title="Edit post" className="px-3" onClick={() => null}>
+          //     <Icon icon={pencilIcon} width="20"/>
+          //   </Link>
+          // )
         }
       </div>
       <p className="pt-2 pl-2 italic">

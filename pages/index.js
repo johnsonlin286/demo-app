@@ -79,6 +79,7 @@ export default function Home() {
       }
       <BottomSheet
         open={showBottomSheet}
+        height="auto"
         onDismiss={() => setShowBottomSheet(false)}
       >
         {
