@@ -101,7 +101,7 @@ export default function Home() {
           ) : photo ? (
             <>
               <PhotoPreview photo={photo} canEdit={user && photo.user._id === user._id ? true : false}/>
-              <CommentsSection photoId={photo._id} comments={comments} user={user}/>
+              <CommentsSection photoId={photo._id} comments={comments} user={user} className="mt-4"/>
             </>
           ) : null
         }

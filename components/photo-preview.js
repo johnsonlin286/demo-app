@@ -8,7 +8,7 @@ import { Icon } from '@iconify/react';
 import trashBin from '@iconify/icons-ion/trash-bin';
 import ellipsisVertical from '@iconify/icons-ion/ellipsis-vertical';
 import pencilIcon from '@iconify/icons-ion/pencil';
-// import chatbubblesOutline from '@iconify/icons-ion/chatbubbles-outline';
+import chatbubblesOutline from '@iconify/icons-ion/chatbubbles-outline';
 import PropTypes from 'prop-types';
 import Dropdown from './dropdown';
 import Link from 'next/link';
@@ -18,15 +18,19 @@ const propTypes = {
   canEdit: PropTypes.bool,
   canDelete: PropTypes.bool,
   deleteCallback: PropTypes.func,
+  showComments: PropTypes.bool,
+  commentsCallback: PropTypes.func,
 };
 
 const defaultProps = {
   canEdit: false,
   canDelete: false,
   deleteCallback: () => null,
+  showComments: false,
+  commentsCallback: () => null,
 };
 
-const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback }) => {
+const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments, commentsCallback }) => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [itemData, setItemData] = useState();
@@ -117,9 +121,13 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback }) => {
       <div className="flex w-full justify-between items-center pt-2">
         <div className="flex items-center">
           <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
-          {/* <button className="ml-3">
-            <Icon icon={chatbubblesOutline} width="30" />
-          </button> */}
+          {
+            itemData && showComments && (
+              <button className="ml-4" onClick={() => commentsCallback(itemData._id)}>
+                <Icon icon={chatbubblesOutline} width="30" />
+              </button>
+            )
+          }
         </div>
         {
           itemData ? canEdit && canDelete ? (

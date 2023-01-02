@@ -9,11 +9,12 @@ const propTypes = {
   photoId: PropTypes.string,
   comments: PropTypes.arrayOf(PropTypes.object),
   user: PropTypes.object,
+  className: PropTypes.string,
 };
 
 const defaultProps = {};
 
-const CommentsSection = ({ photoId, comments, user }) => {
+const CommentsSection = ({ photoId, comments, user, className }) => {
   const [commentsData, setCommentsData] = useState();
   const [userData, setUserData] = useState();
   const [postComment, setPostComment] = useState(false);
@@ -42,8 +43,8 @@ const CommentsSection = ({ photoId, comments, user }) => {
   }
 
   return (
-    <div className="comments-section border-t pt-4 mt-4">
-      <div className={`comments-list${commentsData && commentsData.length <= 0 ? ' flex h-[100] justify-center items-center' : ' h-[200px]'} overflow-y-auto mb-4`}>
+    <div className={`flex flex-col justify-between min-h-full comments-section border-t pt-4${className ? ` ${className}` : ''}`}>
+      <div className={`comments-list${commentsData && commentsData.length <= 0 ? ' flex h-[100px] justify-center items-center' : ' h-[200px]'} overflow-y-auto mb-4`}>
         {
           commentsData && commentsData.length > 0 ? commentsData.map((item, i) => (
             <CommentItem data={item} key={i}/>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { API } from '../../endpoints/api';
-import { PHOTOS } from "../../endpoints/url";
+import { PHOTOS, COMMENT } from "../../endpoints/url";
 import Header from "../../components/header";
 import PhotoPreview from "../../components/photo-preview";
 import { Icon } from '@iconify/react';
@@ -11,15 +11,20 @@ import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 import Avatar from "../../components/avatar";
 import Modal from "../../components/modal";
 import Button from "../../components/button";
+import BottomSheet from '../../components/bottomsheet';
+import CommentsSection from "../../components/comments-section";
 
 const Profile = () => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [data, setData] = useState();
   const [fetchData, setFetchData] = useState(true);
-  const [deleteId, setDeleteId] = useState();
+  const [pickedPhotoId, setPickedPhotoId] = useState();
   const [showConfirm, setShowConfirm] = useState(false);
   const [onRemove, setOnRemove] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentsData, setCommentsData] = useState();
+  const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
     const user = Cookies.get('user');
@@ -45,7 +50,7 @@ const Profile = () => {
   };
 
   const showConfirmWindow = (photoId) => {
-    setDeleteId(photoId);
+    setPickedPhotoId(photoId);
     setShowConfirm(true);
   }
 
@@ -55,14 +60,14 @@ const Profile = () => {
 
   const deleteUserPhoto = async () => {
     setOnRemove(true);
-    await API.delete(PHOTOS + `/${deleteId}`)
+    await API.delete(PHOTOS + `/${pickedPhotoId}`)
       .then((response) => {
         const allPhoto = data;
-        const photo = data.find(item => item._id === deleteId);
+        const photo = data.find(item => item._id === pickedPhotoId);
         const indexPhoto = allPhoto.indexOf(photo);
         allPhoto.splice(indexPhoto, 1);
         setData([...allPhoto]);
-        setDeleteId();
+        setPickedPhotoId();
         setOnRemove(false);
         hideConfirmWindow();
       })
@@ -71,6 +76,26 @@ const Profile = () => {
         setOnRemove(false);
         hideConfirmWindow();
       });
+  }
+
+  const dismissBottomSheet = () => {
+    setPickedPhotoId();
+    setShowComments(false);
+  };
+
+  const fetchComments = async (photoId) => {
+    setShowComments(true);
+    setPickedPhotoId(photoId);
+    try {
+      setFetchingComments(true);
+      const response = await API.get(COMMENT + `/${photoId}`);
+      console.log(response);
+      setCommentsData(response.data.data);
+      setFetchingComments(false);
+    } catch (error) {
+      console.log(error);
+      setFetchingComments(false);
+    }
   }
   
   return (
@@ -99,7 +124,14 @@ const Profile = () => {
               {
                 data.map((item, i) => (
                   <div className="border-b pb-4 mb-4" key={i}>
-                    <PhotoPreview photo={item} canEdit canDelete deleteCallback={showConfirmWindow}/>
+                    <PhotoPreview
+                      photo={item}
+                      canEdit
+                      canDelete
+                      deleteCallback={showConfirmWindow}
+                      showComments
+                      commentsCallback={fetchComments}
+                    />
                   </div>
                 ))
               }
@@ -112,6 +144,27 @@ const Profile = () => {
           )
         }
       </div>
+      <BottomSheet open={showComments} onDismiss={dismissBottomSheet}>
+        {
+          fetchingComments ? (
+            <div className="flex min-w-full min-h-full justify-center items-center">
+              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+            </div>
+          ) : user && commentsData ? (
+            <div>
+              <h3 className="text-lg font-medium mb-4">Comments:</h3>
+              <div className="flex items-center mb-4">
+                <Avatar size="sm" shape="circle" border alt={user.name}/>
+                <p className="flex px-3">
+                  <strong className="inline-block mr-2">{user.name}</strong>
+                  {data && data.length > 0 ? data.find(photo => photo._id === pickedPhotoId) ? data.find(photo => photo._id === pickedPhotoId).caption : null : null}
+                </p>
+              </div>
+              <CommentsSection photoId={pickedPhotoId} comments={commentsData} user={user}/>
+            </div>
+          ) : null
+        }
+      </BottomSheet>
       <Modal show={showConfirm} size="sm" onDismiss={hideConfirmWindow}>
         <p className="mb-2">Are you sure want to delete this photo?</p>
         <div className="inline-block w-1/2 pr-1">
