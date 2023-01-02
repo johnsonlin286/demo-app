@@ -88,6 +88,7 @@ export default function PageSignin() {
             id="emailInput"
             label="Email"
             placeholder="Email"
+            value={formState.email}
             error={errMsg.email || ''}
             className="mb-3"
             onChange={(val) => updateFormState('email', val)}
@@ -97,6 +98,7 @@ export default function PageSignin() {
             type="password"
             label="Password"
             placeholder="Password"
+            value={formState.password}
             error={errMsg.password || ''}
             className="mb-5"
             onChange={(val) => updateFormState('password', val)}

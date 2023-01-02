@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { API } from '../endpoints/api';
-import { PHOTOS } from '../endpoints/url';
+import { PHOTOS, COMMENT } from '../endpoints/url';
 import Cookies from "js-cookie";
 import Header from "../components/header";
 import GalleryGrid from "../components/gallery-grid";
 import ThumbnailImg from "../components/thumbnail-img";
 import BottomSheet from "../components/bottomsheet";
 import PhotoPreview from "../components/photo-preview";
+import CommentsSection from "../components/comments-section";
 import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
@@ -16,6 +17,7 @@ export default function Home() {
   const [data, setData] = useState();
   const [fetchData, setFetchData] = useState(true);
   const [photo, setPhoto] = useState();
+  const [comments, setComments] = useState();
   const [fetchPhoto, setFetchPhoto] = useState(false);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
 
@@ -47,8 +49,10 @@ export default function Home() {
     setShowBottomSheet(true);
     try {
       setFetchPhoto(true);
-      const response = await API.get(PHOTOS + `/${photoId}`);
-      setPhoto(response.data.data);
+      const photo = await API.get(PHOTOS + `/${photoId}`);
+      const comments = await API.get(COMMENT + `/${photoId}`);
+      setPhoto(photo.data.data);
+      setComments(comments.data.data);
       setFetchPhoto(false);
     } catch (error) {
       setFetchPhoto(false);
@@ -95,7 +99,10 @@ export default function Home() {
               <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
             </div>
           ) : photo ? (
-            <PhotoPreview data={photo} canEdit={user && photo.user._id === user._id ? true : false}/>
+            <>
+              <PhotoPreview photo={photo} canEdit={user && photo.user._id === user._id ? true : false}/>
+              <CommentsSection photoId={photo._id} comments={comments} user={user}/>
+            </>
           ) : null
         }
       </BottomSheet>

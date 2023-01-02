@@ -8,12 +8,13 @@ import { Icon } from '@iconify/react';
 import trashBin from '@iconify/icons-ion/trash-bin';
 import ellipsisVertical from '@iconify/icons-ion/ellipsis-vertical';
 import pencilIcon from '@iconify/icons-ion/pencil';
+// import chatbubblesOutline from '@iconify/icons-ion/chatbubbles-outline';
 import PropTypes from 'prop-types';
 import Dropdown from './dropdown';
 import Link from 'next/link';
 
 const propTypes = {
-  data: PropTypes.object,
+  photo: PropTypes.object,
   canEdit: PropTypes.bool,
   canDelete: PropTypes.bool,
   deleteCallback: PropTypes.func,
@@ -25,7 +26,7 @@ const defaultProps = {
   deleteCallback: () => null,
 };
 
-const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
+const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback }) => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [itemData, setItemData] = useState();
@@ -38,19 +39,19 @@ const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
   }, []);
 
   useEffect(() => {
-    if (data) setItemData(data);
+    if (photo) setItemData(photo);
     if (user) {
       const likes = [...itemData.likes];
       const isLiked = likes.filter(item => item.user === user._id);
       if (isLiked.length > 0) setLiked(true);
     }
-    if (data && user) {
-      const authorId = data.user;
+    if (photo && user) {
+      const authorId = photo.user;
       if (authorId === user._id) {
         console.log('is owner of the post');
       }
     }
-  }, [data, user]);
+  }, [photo, user]);
 
   const onLikeHandler = async (status) => {
     if (!user) {
@@ -103,7 +104,7 @@ const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
       <div className="relative rounded-lg overflow-hidden">
         {
           itemData && itemData.user ? (
-            <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black">
+            <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black/50">
               <Avatar size="sm" shape="circle" border alt={itemData.user.name}/>
               <p className="text-lg font-medium text-white ml-2">{itemData.user.name}</p>
             </div>
@@ -116,9 +117,9 @@ const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
       <div className="flex w-full justify-between items-center pt-2">
         <div className="flex items-center">
           <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
-          {
-            itemData && itemData.likes.length > 0 && <p className="font-medium text-sm ml-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
-          }
+          {/* <button className="ml-3">
+            <Icon icon={chatbubblesOutline} width="30" />
+          </button> */}
         </div>
         {
           itemData ? canEdit && canDelete ? (
@@ -153,7 +154,10 @@ const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
           ) : null : null
         }
       </div>
-      <p className="pt-2 pl-2 italic">
+      {
+        itemData && itemData.likes.length > 0 && <p className="pl-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
+      }
+      <p className="mt-2 pl-2 italic">
         {itemData && itemData.caption}
       </p>
     </>

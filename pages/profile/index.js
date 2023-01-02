@@ -97,9 +97,9 @@ const Profile = () => {
           data && data.length > 0 ? (
             <div className="px-5 md:px-0">
               {
-                data.map((_, i) => (
+                data.map((item, i) => (
                   <div className="border-b pb-4 mb-4" key={i}>
-                    <PhotoPreview data={data[i]} canEdit canDelete deleteCallback={showConfirmWindow}/>
+                    <PhotoPreview photo={item} canEdit canDelete deleteCallback={showConfirmWindow}/>
                   </div>
                 ))
               }

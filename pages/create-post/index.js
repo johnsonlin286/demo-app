@@ -90,7 +90,7 @@ const CreatePost = () => {
       <div className="px-5 md:px-0 pt-4 pb-20">
         <form onSubmit={formValidation}>
           <UploadField error={errMsg.imageUrl || ''} onChange={(file) => setImageFile(file)}/>
-          <Textarea id="inputCaption" label="Caption" placeholder="Add your nice caption here..." error={errMsg.caption || ''} className="py-4" onChange={(val) => {
+          <Textarea id="inputCaption" label="Caption" placeholder="Add your nice caption here..." value={formState.caption} error={errMsg.caption || ''} className="py-4" onChange={(val) => {
             setFormState((prev) => (
               {
                 ...prev,
