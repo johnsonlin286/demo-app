@@ -20,6 +20,7 @@ const Profile = () => {
   const [data, setData] = useState();
   const [fetchData, setFetchData] = useState(true);
   const [pickedPhotoId, setPickedPhotoId] = useState();
+  const [pickedPhotoData, setPickedPhotoData] = useState();
   const [showConfirm, setShowConfirm] = useState(false);
   const [onRemove, setOnRemove] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -88,8 +89,9 @@ const Profile = () => {
     setPickedPhotoId(photoId);
     try {
       setFetchingComments(true);
+      const photoData = await data.find(photo => photo._id === photoId);
+      if (photoData) setPickedPhotoData(photoData);
       const response = await API.get(COMMENT + `/${photoId}`);
-      console.log(response);
       setCommentsData(response.data.data);
       setFetchingComments(false);
     } catch (error) {
@@ -150,18 +152,18 @@ const Profile = () => {
             <div className="flex min-w-full min-h-full justify-center items-center">
               <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
             </div>
-          ) : user && commentsData ? (
-            <div>
-              <h3 className="text-lg font-medium mb-4">Comments:</h3>
+          ) : user && pickedPhotoData && commentsData ? (
+            <>
+              <h3 className="text-xl font-medium mb-4">Comments</h3>
               <div className="flex items-center mb-4">
                 <Avatar size="sm" shape="circle" border alt={user.name}/>
                 <p className="flex px-3">
                   <strong className="inline-block mr-2">{user.name}</strong>
-                  {data && data.length > 0 ? data.find(photo => photo._id === pickedPhotoId) ? data.find(photo => photo._id === pickedPhotoId).caption : null : null}
+                  {pickedPhotoData.caption}
                 </p>
               </div>
               <CommentsSection photoId={pickedPhotoId} comments={commentsData} user={user}/>
-            </div>
+            </>
           ) : null
         }
       </BottomSheet>
