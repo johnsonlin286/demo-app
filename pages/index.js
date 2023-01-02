@@ -95,7 +95,7 @@ export default function Home() {
               <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
             </div>
           ) : photo ? (
-            <PhotoPreview data={photo} canEdit={photo.user._id === user._id}/>
+            <PhotoPreview data={photo} canEdit={user && photo.user._id === user._id ? true : false}/>
           ) : null
         }
       </BottomSheet>
