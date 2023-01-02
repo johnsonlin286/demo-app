@@ -19,7 +19,7 @@ export default function PageSignin() {
 
   useEffect(() => {
     const user = Cookies.get('user');
-    if (user) router.push('/dashboard');
+    if (user) router.push('/profile');
   }, []);
 
   const updateFormState = (name, val) => {
@@ -64,7 +64,7 @@ export default function PageSignin() {
       Cookies.set('auth_token', data.token, { expires: expireTime });
       Cookies.set('user', JSON.stringify(data.user), { expires: expireTime });
       setLoading(false);
-      router.push('/dashboard');
+      router.push('/profile');
     } catch (err) {
       setLoading(false);
       setErrMsg(current => (

@@ -75,7 +75,7 @@ const CreatePost = () => {
     try {
       const response = await API.post(PHOTOS, formState);
       if (response.data.status === 201) {
-        router.push('/dashboard');
+        router.push('/profile');
       }
       setLoading(false);
     } catch (error) {
