@@ -12,7 +12,7 @@ import Avatar from "../../components/avatar";
 import Modal from "../../components/modal";
 import Button from "../../components/button";
 
-const Dashboard = () => {
+const Profile = () => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [data, setData] = useState();
@@ -99,7 +99,7 @@ const Dashboard = () => {
               {
                 data.map((_, i) => (
                   <div className="border-b pb-4 mb-4" key={i}>
-                    <PhotoPreview data={data[i]} canDelete deleteCallback={showConfirmWindow}/>
+                    <PhotoPreview data={data[i]} canEdit canDelete deleteCallback={showConfirmWindow}/>
                   </div>
                 ))
               }
@@ -125,4 +125,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Profile;

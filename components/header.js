@@ -31,7 +31,7 @@ const Header = ({ fixed, backBtn, backRoute, title }) => {
           {backBtn && <button onClick={() => backRoute ? router.push(backRoute) : router.back()}><Icon icon={arrowBack} width={28} className="mr-2"/></button>}
           <h1 className="text-xl font-semibold">{title}</h1>
         </div>
-        <button className="text-sky-300 hover:underline order-last" onClick={() => context.setAbout(true)}>
+        <button className="text-sky-400 hover:underline order-last" onClick={() => context.setAbout(true)}>
           About
         </button>
       </div>

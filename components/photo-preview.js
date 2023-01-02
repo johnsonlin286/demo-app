@@ -14,16 +14,18 @@ import Link from 'next/link';
 
 const propTypes = {
   data: PropTypes.object,
+  canEdit: PropTypes.bool,
   canDelete: PropTypes.bool,
   deleteCallback: PropTypes.func,
 };
 
 const defaultProps = {
+  canEdit: false,
   canDelete: false,
   deleteCallback: () => null,
 };
 
-const PhotoPreview = ({ data, canDelete, deleteCallback }) => {
+const PhotoPreview = ({ data, canEdit, canDelete, deleteCallback }) => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [itemData, setItemData] = useState();
@@ -119,32 +121,36 @@ const PhotoPreview = ({ data, canDelete, deleteCallback }) => {
           }
         </div>
         {
-          // itemData && canDelete ? (
-          //   <Dropdown
-          //     menu={[
-          //       {
-          //         label: 'Edit',
-          //         icon: pencilIcon,
-          //         link: `/edit-post?id=${itemData._id}`,
-          //         className: ' text-sky-400'
-          //       },
-          //       {
-          //         label: 'Delete',
-          //         icon: trashBin,
-          //         onClick: () => deleteCallback(itemData._id),
-          //         className: ' text-red-600'
-          //       }
-          //     ]}
-          //   >
-          //     <span className="inline-block px-3">
-          //       <Icon icon={ellipsisVertical} />
-          //     </span>
-          //   </Dropdown>
-          // ) : (
-          //   <Link href={`/edit-post?id=${itemData ? itemData._id : ''}`} title="Edit post" className="px-3" onClick={() => null}>
-          //     <Icon icon={pencilIcon} width="20"/>
-          //   </Link>
-          // )
+          itemData ? canEdit && canDelete ? (
+            <Dropdown
+              menu={[
+                {
+                  label: 'Edit',
+                  icon: pencilIcon,
+                  link: `/edit-post?id=${itemData._id}`,
+                  className: ' text-sky-400'
+                },
+                {
+                  label: 'Delete',
+                  icon: trashBin,
+                  onClick: () => deleteCallback(itemData._id),
+                  className: ' text-red-600'
+                }
+              ]}
+            >
+              <span className="inline-block px-3">
+                <Icon icon={ellipsisVertical} width="20"/>
+              </span>
+            </Dropdown>
+          ) : canEdit ? (
+            <Link href={`/edit-post?id=${itemData ? itemData._id : ''}`} title="Edit post" className="px-3">
+              <Icon icon={pencilIcon} width="20"/>
+            </Link>
+          ) : canDelete ? (
+            <button title="Delete post" className="px-3" onClick={() => deleteCallback(itemData._id)}>
+              <Icon icon={trashBin} width="20"/>
+            </button>
+          ) : null : null
         }
       </div>
       <p className="pt-2 pl-2 italic">

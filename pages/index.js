@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { API } from '../endpoints/api';
 import { PHOTOS } from '../endpoints/url';
+import Cookies from "js-cookie";
 import Header from "../components/header";
 import GalleryGrid from "../components/gallery-grid";
 import ThumbnailImg from "../components/thumbnail-img";
@@ -11,12 +12,18 @@ import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 
 export default function Home() {
-  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [user, setUser] = useState();
   const [data, setData] = useState();
   const [fetchData, setFetchData] = useState(true);
   const [photo, setPhoto] = useState();
   const [fetchPhoto, setFetchPhoto] = useState(false);
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
 
+  useEffect(() => {
+    const user = Cookies.get('user');
+    if (user) setUser(JSON.parse(user));
+  }, []);
+  
   useEffect(() => {
     if (!data) fetchPhotos();
   }, [data]);
@@ -88,7 +95,7 @@ export default function Home() {
               <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
             </div>
           ) : photo ? (
-            <PhotoPreview data={photo}/>
+            <PhotoPreview data={photo} canEdit={photo.user._id === user._id}/>
           ) : null
         }
       </BottomSheet>
