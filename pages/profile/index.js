@@ -118,10 +118,7 @@ const Profile = () => {
             <div className="flex justify-center items-center pt-14">
               <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
             </div>
-          ) : null
-        }
-        {
-          data && data.length > 0 ? (
+          ) : data && data.length > 0 ? (
             <div className="px-5 md:px-0">
               {
                 data.map((item, i) => (

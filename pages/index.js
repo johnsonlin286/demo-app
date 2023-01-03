@@ -68,10 +68,7 @@ export default function Home() {
           <div className="flex min-w-full min-h-screen justify-center items-center pt-14 pb-20">
             <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
           </div>
-        ) : null
-      }
-      {
-        data && data.length > 0 ? (
+        ) : data && data.length > 0 ? (
           <div className="px-1 md:px-0 pt-14 pb-20">
             <GalleryGrid>
               {
