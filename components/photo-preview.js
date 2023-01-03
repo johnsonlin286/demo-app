@@ -132,6 +132,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
         {
           itemData ? canEdit && canDelete ? (
             <Dropdown
+              top
               menu={[
                 {
                   label: 'Edit',

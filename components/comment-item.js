@@ -12,19 +12,22 @@ const propTypes = {
     }),
     reply: PropTypes.array,
   }),
+  onReply: PropTypes.func,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  onReply: () => null,
+};
 
-const CommentItem = ({ data }) => {
+const CommentItem = ({ data, onReply }) => {
   return (
     <div className="comment-container flex items-center mb-3">
       <Avatar size="sm" shape="circle" border alt={data.user.name || 'No Name'}/>
       <p className="flex-1 px-3">
         <strong className="inline-block mr-2">{data.user.name || 'No Name'}</strong>
         {data.message || ''}
-        {/* <br/> */}
-        {/* <a role="button" className="font-medium text-xs text-sky-400 mt-3" onClick={(e) => { e.preventDefault(); }}>Reply</a> */}
+        <br/>
+        <a role="button" className="font-medium text-xs text-sky-400 mt-3" onClick={(e) => { e.preventDefault(); onReply(); }}>Reply</a>
       </p>
     </div>
   );

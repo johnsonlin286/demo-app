@@ -45,7 +45,7 @@ const Dropdown = ({ top, menu, children }) => {
       </button>
       {
         showNav && (
-          <nav className={`dropdown-nav absolute ${top ? 'top bottom-full mb-3' : 'down top-full mt-3'}`}>
+          <nav className={`dropdown-nav absolute ${top ? 'top bottom-full mb-3' : 'down top-full mt-3'} z-10`}>
             <ol className="bg-white border border-gray-200 rounded-md overflow-hidden">
               {
                 menu && menu.length > 0 ? menu.map((item, i) => (

@@ -9,18 +9,24 @@ const propTypes = {
     name: PropTypes.string,
     email: PropTypes.string,
   }),
+  value: PropTypes.string,
   onReply: PropTypes.func,
   posting: PropTypes.bool,
 };
 
 const defaultProps = {
+  value: '',
   onReply: () => null,
   posting: false,
 };
 
-const CommentForm = ({ user, onReply, posting }) => {
+const CommentForm = ({ user, value, onReply, posting }) => {
   const [comment, setComment] = useState('');
   const [errMsg, setErrMsg] = useState({});
+  
+  useEffect(() => {
+    setComment(value)
+  }, [value]);
   
   useEffect(() => {
     if (!posting) setComment('');
@@ -40,19 +46,25 @@ const CommentForm = ({ user, onReply, posting }) => {
   };
 
   return (
-    <form className="flex justify-center" onSubmit={onSubmitHandler}>
-      <InputField
-        id="inputComment"
-        placeholder={`Comment as ${user.name}...`}
-        value={comment}
-        disabled={posting}
-        error={errMsg.comment || ''}
-        className="flex-1 mr-2"
-        onChange={(val) => setComment(val)}
-      />
-      <Button size="sm" disabled={!comment || posting} loading={posting}>
-        Reply
-      </Button>
+    <form onSubmit={onSubmitHandler}>
+      <div className="flex justify-center">
+        <InputField
+          id="inputComment"
+          placeholder={`Comment as ${user.name}...`}
+          value={comment}
+          disabled={posting}
+          error={errMsg.comment ? ' ' : ''}
+          className="flex-1 mr-2"
+          focus={comment.length > 0 ? true : false}
+          onChange={(val) => setComment(val)}
+        />
+        <Button size="sm" disabled={posting} loading={posting}>
+          Reply
+        </Button>
+      </div>
+      {
+        errMsg.comment && <span className="block text-red-600 text-xs">{errMsg.comment}</span>
+      }
     </form>
   );
 };
