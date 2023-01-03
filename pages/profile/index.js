@@ -103,7 +103,7 @@ const Profile = () => {
   return (
     <div className="dashboard">
       <Header backBtn backRoute={'/'} fixed title={user && user.name}/>
-      <div className={`flex flex-col min-h-screen pb-20${!data || data.length <= 0 ? ' justify-between' : ''}`}>
+      <div className={`flex flex-col min-h-screen pb-20`}>
         <div className="flex px-5 md:px-0 pt-16 pb-4">
           <Avatar shape="circle" size="lg" border alt={user && user.name}/>
           <div className="flex flex-col flex-1 justify-center items-center text-2xl">
