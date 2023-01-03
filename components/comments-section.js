@@ -63,7 +63,7 @@ const CommentsSection = ({ photoId, comments, user, className }) => {
             name: userData.name,
           },
         };
-        const thread = commentsData.find(thread => thread._id === replyData.thread_id);
+        const thread = await commentsData.find(thread => thread._id === replyData.thread_id);
         thread.reply.push(newReply);
         setReplyData();
       } else {
