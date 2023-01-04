@@ -13,8 +13,10 @@ import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 
 export default function Home() {
+  const [mountStat, setMoutStat] = useState(false);
   const [user, setUser] = useState();
   const [data, setData] = useState();
+  const [totalPost, setTotalPost] = useState(0);
   const [fetchData, setFetchData] = useState(true);
   const [photo, setPhoto] = useState();
   const [comments, setComments] = useState();
@@ -24,19 +26,21 @@ export default function Home() {
   useEffect(() => {
     const user = Cookies.get('user');
     if (user) setUser(JSON.parse(user));
+    setMoutStat(true);
   }, []);
-  
-  useEffect(() => {
-    if (!data) fetchPhotos();
-  }, [data]);
 
+  useEffect(() => {
+    if (mountStat) fetchPhotos();
+  }, [mountStat]);
+  
   const fetchPhotos = async () => {
     try {
       setFetchData(true);
-      const response = await API.get(PHOTOS);
-      if (response.data.data) {
-        setData(response.data.data);
-      }
+      const response = await API.get(PHOTOS + `?offset=${data ? data.length : 0}&limit=20`);
+      if (data && data.length > 0) {
+        setData((prev) => [...prev, ...response.data.data]);
+      } else setData(response.data.data);
+      setTotalPost(response.data.total);
       setFetchData(false);
     } catch (error) {
       setFetchData(false);
@@ -60,16 +64,24 @@ export default function Home() {
     }
   }
 
+  const windowScroll = () => {
+    let docOffsetheight = document.body.offsetHeight;
+    if ((window.innerHeight + window.scrollY) >= (docOffsetheight - 124)) {
+      if (data.length < totalPost && !fetchData) fetchPhotos();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', windowScroll);
+    return () => document.removeEventListener('scroll', windowScroll);
+  }, [windowScroll]);
+
   return (
     <div className="home">
       <Header fixed title={'Home'}/>
-      {
-        fetchData ? (
-          <div className="flex min-w-full min-h-screen justify-center items-center pt-14 pb-20">
-            <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
-          </div>
-        ) : data && data.length > 0 ? (
-          <div className="px-1 md:px-0 pt-14 pb-20">
+      <div className={`${!data && fetchData ? 'flex h-screen justify-center ' : !data.length > 0 ? 'flex h-screen justify-center items-end ' : ''}px-1 md:px-0 pt-14 pb-20`}>
+        {
+          data && data.length > 0 ? (
             <GalleryGrid>
               {
                 data.map((item, i) => (
@@ -77,14 +89,21 @@ export default function Home() {
                 ))
               }
             </GalleryGrid>
-          </div>
-        ) : (
-          <div className="flex flex-col min-w-full min-h-screen justify-end items-center pt-14 pb-20">
-            <p>No post found! Start post your image here...</p>
-            <Icon icon={arrowDownOutline} width="38" height="38"/>
-          </div>
-        )
-      }
+          ) : !fetchData ? (
+            <div className="flex flex-col justify-center items-center">
+              <p>No post found! Start post your image here...</p>
+              <Icon icon={arrowDownOutline} width="38" height="38"/>
+            </div>
+          ) : null
+        }
+        {
+          fetchData ? (
+            <div className="flex justify-center items-center py-5">
+              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+            </div>
+          ) : null
+        }
+      </div>
       <BottomSheet
         open={showBottomSheet}
         height="auto"

@@ -18,6 +18,7 @@ const Profile = () => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [data, setData] = useState();
+  const [totalPost, setTotalPost] = useState(0);
   const [fetchData, setFetchData] = useState(true);
   const [pickedPhotoId, setPickedPhotoId] = useState();
   const [pickedPhotoData, setPickedPhotoData] = useState();
@@ -41,11 +42,14 @@ const Profile = () => {
   const fetchUserPhotos = async () => {
     try {
       setFetchData(true);
-      const response = await API.get(PHOTOS + `/user/${user._id}`);
-      setData(response.data.data);
-      setFetchData(false);
+      const response = await API.get(PHOTOS + `/user/${user._id}?offset=${data ? data.length : 0}`);
+      if (data && data.length > 0) {
+        setData(prev => [...prev, ...response.data.data]);
+      } else setData(response.data.data);
+      setTotalPost(response.data.total);
+      // setFetchData(false);
     } catch (error) {
-      setFetchData(false);
+      // setFetchData(false);
       console.log(error);
     }
   };
@@ -92,33 +96,41 @@ const Profile = () => {
       const photoData = await data.find(photo => photo._id === photoId);
       if (photoData) setPickedPhotoData(photoData);
       const response = await API.get(COMMENT + `/${photoId}`);
-      setCommentsData(response.data.data);
+      setCommentsData(response.data);
       setFetchingComments(false);
     } catch (error) {
       console.log(error);
       setFetchingComments(false);
     }
-  }
+  };
+
+  const windowScroll = () => {
+    let docOffsetheight = document.body.offsetHeight;
+    if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
+      if (data.length < totalPost && !fetchData) fetchUserPhotos();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', windowScroll);
+    return () => document.removeEventListener('scroll', windowScroll);
+  }, [windowScroll]);
   
   return (
     <div className="dashboard">
       <Header backBtn backRoute={'/'} fixed title={user && user.name}/>
-      <div className={`flex flex-col min-h-screen pb-20`}>
+      <div className={`flex flex-col min-h-screen pb-20${data && !data.length > 0 ? ' justify-between' : ''}`}>
         <div className="flex px-5 md:px-0 pt-16 pb-4">
           <Avatar shape="circle" size="lg" border alt={user && user.name}/>
           <div className="flex flex-col flex-1 justify-center items-center text-2xl">
-            {data && data.length || 0}
+            {totalPost}
             <p>{`Post${data && data.length > 1 ? 's' : ''}`}</p>
           </div>
           <div className="flex-1"/>
           <div className="flex-1"/>
         </div>
         {
-          fetchData ? (
-            <div className="flex justify-center items-center pt-14">
-              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
-            </div>
-          ) : data && data.length > 0 ? (
+          data && data.length > 0 ? (
             <div className="px-5 md:px-0">
               {
                 data.map((item, i) => (
@@ -135,12 +147,19 @@ const Profile = () => {
                 ))
               }
             </div>
-          ) : (
+          ) : !fetchData ? (
             <div className="flex flex-col justify-end items-center">
               <p>No post found! Start post your image here...</p>
               <Icon icon={arrowDownOutline} width="38" height="38"/>
             </div>
-          )
+          ) : null
+        }
+        {
+          fetchData ? (
+            <div className="flex justify-center items-center py-5">
+              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+            </div>
+          ) : null
         }
       </div>
       <BottomSheet open={showComments} onDismiss={dismissBottomSheet}>

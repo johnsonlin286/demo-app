@@ -11,7 +11,7 @@ const defaultProps = {};
 const ThumbnailImg = ({ src, alt, onClick }) => {
   return (
     <div role="button" className="flex justify-center items-center h-[130px] overflow-hidden" onClick={onClick}>
-      <img src={src} alt={alt} className="max-w-none h-full"/>
+      <img src={src} alt={alt} loading="lazy" className="max-w-none h-full"/>
     </div>
   );
 };

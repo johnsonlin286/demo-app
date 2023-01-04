@@ -115,7 +115,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
           ) : null
         }
         {
-          itemData && <img src={itemData.imageUrl} alt={itemData.caption} className="w-full"/>
+          itemData && <img src={itemData.imageUrl} alt={itemData.caption} loading="lazy" className="w-full"/>
         }
       </div>
       <div className="flex w-full justify-between items-center pt-2">
