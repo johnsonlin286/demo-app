@@ -47,9 +47,9 @@ const Profile = () => {
         setData(prev => [...prev, ...response.data.data]);
       } else setData(response.data.data);
       setTotalPost(response.data.total);
-      // setFetchData(false);
+      setFetchData(false);
     } catch (error) {
-      // setFetchData(false);
+      setFetchData(false);
       console.log(error);
     }
   };
