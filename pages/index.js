@@ -79,7 +79,7 @@ export default function Home() {
   return (
     <div className="home">
       <Header fixed title={'Home'}/>
-      <div className={`${!data && fetchData ? 'flex h-screen justify-center ' : !data.length > 0 ? 'flex h-screen justify-center items-end ' : ''}px-1 md:px-0 pt-14 pb-20`}>
+      <div className={`${!data && fetchData ? 'flex h-screen justify-center ' : data && !data.length > 0 ? 'flex h-screen justify-center items-end ' : ''}px-1 md:px-0 pt-14 pb-20`}>
         {
           data && data.length > 0 ? (
             <GalleryGrid>
