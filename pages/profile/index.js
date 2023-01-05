@@ -205,6 +205,7 @@ export default Profile;
 export async function getServerSideProps (context) {
   try {
     const user = JSON.parse(context.req.cookies.user);
+    if (!user) throw new Error('User not authorize!');
     const response = await API.get(PHOTOS + `/user/${user._id}?offset=0`);
     return {
       props: {
@@ -212,6 +213,11 @@ export async function getServerSideProps (context) {
       }
     }
   } catch (error) {
-    console.log(error);
+    return {
+      redirect: {
+          destination: '/signin',
+          statusCode: 307
+      }
+    }
   }
 }
