@@ -12,7 +12,7 @@ import { Icon } from '@iconify/react';
 import loadingIcon from '@iconify/icons-mdi/loading';
 import arrowDownOutline from '@iconify/icons-ion/arrow-down-outline';
 
-export default function Home() {
+export default function Home({ photosData }) {
   const [mountStat, setMoutStat] = useState(false);
   const [user, setUser] = useState();
   const [data, setData] = useState();
@@ -30,7 +30,11 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (mountStat) fetchPhotos();
+    if (mountStat) {
+      setData(photosData.data);
+      setTotalPost(photosData.total);
+      setFetchData(false);
+    };
   }, [mountStat]);
   
   const fetchPhotos = async () => {
@@ -124,4 +128,17 @@ export default function Home() {
       </BottomSheet>
     </div>
   )
+}
+
+export async function getServerSideProps () {
+  try {
+    const response = await API.get(PHOTOS + `?offset=0&limit=20`);
+    return {
+      props: {
+        photosData: response.data
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
