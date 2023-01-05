@@ -71,7 +71,7 @@ export default function Home({ photosData }) {
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
     if ((window.innerHeight + window.scrollY) >= (docOffsetheight - 124)) {
-      if (data.length < totalPost && !fetchData) fetchPhotos();
+      if (data && data.length < totalPost && !fetchData) fetchPhotos();
     }
   };
 

@@ -111,7 +111,7 @@ const Profile = ({ photosData }) => {
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
     if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
-      if (data.length < totalPost && !fetchData) fetchUserPhotos();
+      if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
     }
   };
 
