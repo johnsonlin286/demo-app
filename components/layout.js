@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
         }
         <BottomSheet 
           open={context.about}
-          height="50"
+          height="80"
           onDismiss={() => context.setAbout(false)}
         >
           {parse(about)}

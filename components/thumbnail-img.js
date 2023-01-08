@@ -11,8 +11,8 @@ const defaultProps = {};
 
 const ThumbnailImg = ({ src, alt, onClick }) => {
   return (
-    <a role="button" className="flex justify-center items-center h-[130px] overflow-hidden" onClick={(e) => {e.preventDefault(); onClick();}}>
-      <Image src={src} alt={alt} imageClassName="h-full aspect-video"/>
+    <a role="button" className="h-[130px] overflow-hidden" onClick={(e) => {e.preventDefault(); onClick();}}>
+      <Image src={src} alt={alt} wrapperClassName="relative" imageClassName="absolute aspect-[4/3] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"/>
     </a>
   );
 };

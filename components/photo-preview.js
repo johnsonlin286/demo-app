@@ -108,7 +108,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     <>
       <div className="relative rounded-lg overflow-hidden">
         {
-          itemData && <Image src={itemData.imageUrl} alt={itemData.caption} wrapperClassName="rounded-lg overflow-hidden" imageClassName="w-full"/>
+          itemData && <Image src={itemData.imageUrl} alt={itemData.caption} wrapperClassName="rounded-lg overflow-hidden"/>
         }
         {
           itemData && itemData.user ? (
