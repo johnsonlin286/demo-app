@@ -1,11 +1,14 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { AppContext } from '../context';
 import { useRouter } from 'next/router';
 
 import Head from 'next/head'
 import BottomNav from './bottom-nav';
 import BottomSheet from './bottomsheet';
-import PropTypes from 'prop-types';
+
+import { about } from '../utils/about';
+
+const parse = require('html-react-parser');
 
 const propTypes = {};
 
@@ -31,10 +34,10 @@ const Layout = ({ children }) => {
         }
         <BottomSheet 
           open={context.about}
-          height="100"
+          height="50"
           onDismiss={() => context.setAbout(false)}
         >
-          About
+          {parse(about)}
         </BottomSheet>
       </main>
     </div>

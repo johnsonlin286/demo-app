@@ -14,7 +14,7 @@ import Button from "../../components/button";
 import BottomSheet from '../../components/bottomsheet';
 import CommentsSection from "../../components/comments-section";
 
-const Profile = () => {
+const Profile = ({ photosData }) => {
   const router = useRouter();
   const [user, setUser] = useState();
   const [data, setData] = useState();
@@ -36,8 +36,12 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    if (user) fetchUserPhotos();
-  }, [user]);
+    if (photosData) {
+      setData(photosData.data);
+      setTotalPost(photosData.total);
+      setFetchData(false);
+    }
+  }, [photosData]);
 
   const fetchUserPhotos = async () => {
     try {
@@ -107,7 +111,7 @@ const Profile = () => {
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
     if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
-      if (data.length < totalPost && !fetchData) fetchUserPhotos();
+      if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
     }
   };
 
@@ -197,3 +201,23 @@ const Profile = () => {
 };
 
 export default Profile;
+
+export async function getServerSideProps (context) {
+  try {
+    const user = JSON.parse(context.req.cookies.user);
+    if (!user) throw new Error('User not authorize!');
+    const response = await API.get(PHOTOS + `/user/${user._id}?offset=0`);
+    return {
+      props: {
+        photosData: response.data,
+      }
+    }
+  } catch (error) {
+    return {
+      redirect: {
+          destination: '/signin',
+          statusCode: 307
+      }
+    }
+  }
+}

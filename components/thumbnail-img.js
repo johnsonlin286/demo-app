@@ -1,3 +1,4 @@
+import Image from './image';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -10,9 +11,9 @@ const defaultProps = {};
 
 const ThumbnailImg = ({ src, alt, onClick }) => {
   return (
-    <div role="button" className="flex justify-center items-center h-[130px] overflow-hidden" onClick={onClick}>
-      <img src={src} alt={alt} loading="lazy" className="max-w-none h-full"/>
-    </div>
+    <a role="button" className="flex justify-center items-center h-[130px] overflow-hidden" onClick={(e) => {e.preventDefault(); onClick();}}>
+      <Image src={src} alt={alt} imageClassName="h-full aspect-video"/>
+    </a>
   );
 };
 

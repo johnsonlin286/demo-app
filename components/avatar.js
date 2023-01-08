@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Image from './image';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -33,7 +34,7 @@ const Avatar = ({ shape, size, border, src, alt, }) => {
   return (
     <div className={`${shape === 'circle' ? 'rounded-full' : 'rounded-lg'} ${size === 'sm' ? 'w-4 h-4 p-4' : size === 'lg' ? 'w-28 h-28' : 'w-6 h-6 p-[18px]'}${border ? ' border-2 border-white' : ''} bg-gray-300 flex justify-center items-center overflow-hidden`}>
       {
-        src ? <img src={src} alt={initialName || 'avatar'} className="w-full"/> : <span className={`font-semibold ${size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-4xl' : 'text-base'}`}>{initialName}</span>
+        src ? <Image src={src} alt={initialName || 'avatar'} imageClassName="w-full"/> : <span className={`font-semibold ${size === 'sm' ? 'text-xs' : size === 'lg' ? 'text-4xl' : 'text-base'}`}>{initialName}</span>
       }
     </div>
   );

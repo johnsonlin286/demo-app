@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { likePost, unlikePost } from '../services/like-post';
 import { useRouter } from 'next/router';
-import Avatar from './avatar';
 import Cookies from 'js-cookie';
+import Link from 'next/link';
+import Avatar from './avatar';
 import ButtonLike from './button-like';
+import Dropdown from './dropdown';
+import Image from './image';
 import { Icon } from '@iconify/react';
 import trashBin from '@iconify/icons-ion/trash-bin';
 import ellipsisVertical from '@iconify/icons-ion/ellipsis-vertical';
 import pencilIcon from '@iconify/icons-ion/pencil';
 import chatbubblesOutline from '@iconify/icons-ion/chatbubbles-outline';
 import PropTypes from 'prop-types';
-import Dropdown from './dropdown';
-import Link from 'next/link';
 
 const propTypes = {
   photo: PropTypes.object,
@@ -107,15 +108,15 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     <>
       <div className="relative rounded-lg overflow-hidden">
         {
+          itemData && <Image src={itemData.imageUrl} alt={itemData.caption} wrapperClassName="rounded-lg overflow-hidden" imageClassName="w-full"/>
+        }
+        {
           itemData && itemData.user ? (
             <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black/50">
               <Avatar size="sm" shape="circle" border alt={itemData.user.name}/>
               <p className="text-lg font-medium text-white ml-2">{itemData.user.name}</p>
             </div>
           ) : null
-        }
-        {
-          itemData && <img src={itemData.imageUrl} alt={itemData.caption} loading="lazy" className="w-full"/>
         }
       </div>
       <div className="flex w-full justify-between items-center pt-2">
