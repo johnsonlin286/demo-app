@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { API } from '../endpoints/api';
-import { PHOTOS, COMMENT } from '../endpoints/url';
+// import { PHOTOS, COMMENT } from '../endpoints/url';
 import Cookies from "js-cookie";
 import Header from "../components/header";
 import GalleryGrid from "../components/gallery-grid";
@@ -31,8 +32,8 @@ export default function Home({ photosData }) {
 
   useEffect(() => {
     if (mountStat) {
-      setData(photosData.data);
-      setTotalPost(photosData.total);
+      setData(photosData.photos.data);
+      setTotalPost(photosData.photos.total);
       setFetchData(false);
     };
   }, [mountStat]);
@@ -40,11 +41,32 @@ export default function Home({ photosData }) {
   const fetchPhotos = async () => {
     try {
       setFetchData(true);
-      const response = await API.get(PHOTOS + `?offset=${data ? data.length : 0}&limit=20`);
-      if (data && data.length > 0) {
-        setData((prev) => [...prev, ...response.data.data]);
-      } else setData(response.data.data);
-      setTotalPost(response.data.total);
+      const reqBody = {
+        query: `
+          query photos($isAuth: Boolean!, $skip: Float, $limit: Float) {
+            photos(isAuth: $isAuth, skip: $skip, limit: $limit) {
+              data {
+                _id
+                imageUrl
+                user {
+                  email
+                }
+              }
+              total
+            }
+          }
+        `,
+        variables: {
+          isAuth: user ? true : false,
+          skip: data && data.length || 0,
+          limit: 10
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.photos.data;
+      if (result && result.length > 0) {
+        setData(prev => [...prev, ...result]);
+      }
       setFetchData(false);
     } catch (error) {
       setFetchData(false);
@@ -52,21 +74,69 @@ export default function Home({ photosData }) {
     }
   };
   
+  /*
   const fetchPhotoDetail = async (photoId) => {
     setPhoto();
     setShowBottomSheet(true);
     try {
       setFetchPhoto(true);
-      const photo = await API.get(PHOTOS + `/${photoId}`);
-      const comments = await API.get(COMMENT + `/${photoId}`);
-      setPhoto(photo.data.data);
-      setComments(comments.data.data);
+      const reqBody = {
+        query: `
+          query photo($photoId: ID!){
+            photo(photoId: $photoId) {
+              _id
+              imageUrl
+              caption
+              user {
+                _id
+                name
+              }
+              likes {
+                _id
+                user {
+                  _id
+                }
+              }
+              comments {
+                _id
+                message
+                user {
+                  _id
+                  name
+                }
+                reply {
+                  _id
+                  message
+                  user {
+                    _id
+                    name
+                  }
+                }
+                likes {
+                  _id
+                }
+              }
+            }
+          }
+        `,
+        variables: {
+          photoId,
+        }
+      };
+      const photo = await API.post(process.env.API_URL, reqBody);
+      setPhoto(photo.data.photo);
+      setComments(photo.data.photo.comments);
+      // const photo = await API.get(PHOTOS + `/${photoId}`);
+      // const comments = await API.get(COMMENT + `/${photoId}`);
+      // setPhoto(photo.data.data);
+      // setComments(comments.data.data);
       setFetchPhoto(false);
     } catch (error) {
       setFetchPhoto(false);
       console.log(error);
     }
   }
+  */
 
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
@@ -89,7 +159,7 @@ export default function Home({ photosData }) {
             <GalleryGrid>
               {
                 data.map((item, i) => (
-                  <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} onClick={() => fetchPhotoDetail(item._id)}/>
+                  <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} onClick={() => null}/>
                 ))
               }
             </GalleryGrid>
@@ -110,7 +180,7 @@ export default function Home({ photosData }) {
       </div>
       <BottomSheet
         open={showBottomSheet}
-        height="auto"
+        height="80"
         onDismiss={() => setShowBottomSheet(false)}
       >
         {
@@ -130,9 +200,35 @@ export default function Home({ photosData }) {
   )
 }
 
-export async function getServerSideProps () {
+export async function getServerSideProps (context) {
   try {
-    const response = await API.get(PHOTOS + `?offset=0&limit=20`);
+    const token = context.req.cookies.auth_token || null;
+    const reqBody = {
+      query: `
+        query photos($isAuth: Boolean!, $skip: Float, $limit: Float) {
+          photos(isAuth: $isAuth, skip: $skip, limit: $limit) {
+            data {
+              _id
+              imageUrl
+              user {
+                email
+              }
+            }
+            total
+          }
+        }
+      `,
+      variables: {
+        isAuth: token ? true : false,
+        skip: 0,
+        limit: 20
+      }
+    }
+    const response = await API.post(process.env.API_URL, reqBody, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : null
+      }
+    });
     return {
       props: {
         photosData: response.data

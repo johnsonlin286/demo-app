@@ -23,10 +23,10 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    let user = Cookies.get('user');
-    if (!user) {
-      router.push('/signin');
-    };
+    // let user = Cookies.get('user');
+    // if (!user) {
+    //   router.push('/signin');
+    // };
   }, []);
 
   const formValidation = (e) => {

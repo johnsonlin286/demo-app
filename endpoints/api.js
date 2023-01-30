@@ -10,7 +10,7 @@ const createApi = (baseURL) => {
 
   api.interceptors.request.use(function (config) {
     return new Promise((resolve) => {
-      let token = Cookies.get('auth_token');
+      const token = Cookies.get('auth_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -21,7 +21,7 @@ const createApi = (baseURL) => {
   })
 
   api.interceptors.response.use(function (response) {
-    return response;
+    return response.data;
   }, function (error) {
     return Promise.reject(error.response);
   })

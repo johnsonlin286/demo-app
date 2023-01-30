@@ -47,7 +47,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     if (photo) setItemData(photo);
     if (user) {
       const likes = [...itemData.likes];
-      const isLiked = likes.filter(item => item.user === user._id);
+      const isLiked = likes.filter(item => item.user._id === user.id);
       if (isLiked.length > 0) setLiked(true);
     }
     if (photo && user) {

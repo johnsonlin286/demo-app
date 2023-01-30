@@ -29,10 +29,10 @@ const Profile = ({ photosData }) => {
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
-    const user = Cookies.get('user');
-    if (!user) {
-      router.push('/signin')
-    } else setUser(JSON.parse(user));
+    // const user = Cookies.get('user');
+    // if (!user) {
+    //   router.push('/signin')
+    // } else setUser(JSON.parse(user));
   }, []);
 
   useEffect(() => {

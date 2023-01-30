@@ -21,11 +21,11 @@ const EditPost = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const user = Cookies.get('user');
-    if (!user) {
-      router.push('/signin');
-      return;
-    }
+    // const user = Cookies.get('user');
+    // if (!user) {
+    //   router.push('/signin');
+    //   return;
+    // }
   }, []);
 
   useEffect(() => {

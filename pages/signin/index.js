@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { API } from "../../endpoints/api";
-import { SIGNIN } from "../../endpoints/url";
+// import { SIGNIN } from "../../endpoints/url";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 
@@ -57,15 +57,33 @@ export default function PageSignin() {
   const formSubmit = async () => {
     try {
       setLoading(true);
-      const response = await API.post(SIGNIN, formState);
-      const data = response.data.data;
+      const reqBody = {
+        query: `
+          query Signin($email: String!, $password: String!) {
+            signin(email: $email, password: $password), {
+              _id
+              name
+              email
+              token
+            }
+          }
+        `,
+        variables: {
+          email: formState.email,
+          password: formState.password
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const data = response.data.signin;
       const expireTime = new Date();
       expireTime.setTime(expireTime.getTime() + 24 * 3600 * 1000);
       Cookies.set('auth_token', data.token, { expires: expireTime });
-      Cookies.set('user', JSON.stringify(data.user), { expires: expireTime });
+      Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: expireTime });
+      window.alert('TEST');
       setLoading(false);
       router.push('/profile');
     } catch (err) {
+      console.log(err);
       setLoading(false);
       setErrMsg(current => (
         {
