@@ -78,12 +78,10 @@ export default function PageSignin() {
       const expireTime = new Date();
       expireTime.setTime(expireTime.getTime() + 24 * 3600 * 1000);
       Cookies.set('auth_token', data.token, { expires: expireTime });
-      Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: expireTime });
-      window.alert('TEST');
+      Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: 1 });
       setLoading(false);
       router.push('/profile');
     } catch (err) {
-      console.log(err);
       setLoading(false);
       setErrMsg(current => (
         {

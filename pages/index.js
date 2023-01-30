@@ -235,11 +235,13 @@ export async function getServerSideProps (context) {
       }
     }
   } catch (error) {
+    console.log(error);
     return {
-      redirect: {
-          destination: '/505',
-          statusCode: 307
-      }
+      props: {}
+      // redirect: {
+      //     destination: '/505',
+      //     statusCode: 307
+      // }
     }
   }
 }

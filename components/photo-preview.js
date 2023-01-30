@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { likePost, unlikePost } from '../services/like-post';
+// import { likePost, unlikePost } from '../services/like-post';
+import { API } from '../endpoints/api';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
@@ -58,50 +59,122 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     }
   }, [photo, user]);
 
-  const onLikeHandler = async (status) => {
+  const likeToggle = async (status) => {
     if (!user) {
       router.push('/signin');
       return;
     }
-    setLiked(status);
-    if (!status) {
-      const likesData = itemData.likes;
-      const likeItem = likesData.find(data => data.user === user._id);
-      const indexItem = likesData.indexOf(likeItem);
-      if (likeItem) {
-        setUpdateLike(true);
-        await unlikePost(likeItem._id).then(() => {
-          likesData.splice(indexItem, 1);
-          setItemData(prev => (
-            {
-              ...prev,
-              likes: [...likesData],
-            }
-          ));
-          setUpdateLike(false);
-        }).catch((error) => {
-          console.log(error);
-          setUpdateLike(false);
-        });
-      }
+    // setLiked(status);
+    if (status) {
+      // like
+      likeHandler();
+      // const likesData = itemData.likes;
+      // const likeItem = likesData.find(data => data.user === user._id);
+      // const indexItem = likesData.indexOf(likeItem);
+      // if (likeItem) {
+      //   setUpdateLike(true);
+      //   await unlikePost(likeItem._id).then(() => {
+      //     likesData.splice(indexItem, 1);
+      //     setItemData(prev => (
+      //       {
+      //         ...prev,
+      //         likes: [...likesData],
+      //       }
+      //     ));
+      //     setUpdateLike(false);
+      //   }).catch((error) => {
+      //     console.log(error);
+      //     setUpdateLike(false);
+      //   });
+      // }
     } else {
-      const likesData = itemData.likes;
-      setUpdateLike(true);
-      await likePost(itemData._id).then((response) => {
-        const result = response.data.data;
-        likesData.push({_id: result._id, user: result.user})
-        setItemData(prev => (
-          {
-            ...prev,
-            likes: [...likesData],
-          }
-        ));
-        setUpdateLike(false);
-      }).catch((error) => {
-        console.log(error);
-        setUpdateLike(false);
-      });
+      // dislike
+      dislikeHandler()
+      // const likesData = itemData.likes;
+      // setUpdateLike(true);
+      // await likePost(itemData._id).then((response) => {
+      //   const result = response.data.data;
+      //   likesData.push({_id: result._id, user: result.user})
+      //   setItemData(prev => (
+      //     {
+      //       ...prev,
+      //       likes: [...likesData],
+      //     }
+      //   ));
+      //   setUpdateLike(false);
+      // }).catch((error) => {
+      //   console.log(error);
+      //   setUpdateLike(false);
+      // });
     };
+  }
+
+  const likeHandler = async () => {
+    try {
+      setUpdateLike(true);
+      const reqBody = {
+        query: `
+          mutation like($itemId: ID!, $type: String!) {
+            like(likeInput: {itemId: $itemId, type: $type}), {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: itemData._id,
+          type: 'photo'
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.like;
+      const likes = itemData.likes;
+      likes.push(result);
+      setItemData(prev => (
+        {
+          ...prev,
+          likes: [...likes],
+        }
+      ));
+      setUpdateLike(false);
+    } catch (error) {
+      console.log(error);
+      setUpdateLike(false);
+    }
+  }
+
+  const dislikeHandler = async () => {
+    try {
+      setUpdateLike(true);
+      const likes = itemData.likes;
+      const userLike = likes.find(like => like.user._id === user.id);
+      const indexUserLike = likes.indexOf(userLike);
+      const reqBody = {
+        query: `
+          mutation dislike($itemId: ID!, $type: String!) {
+            dislike(likeInput: {itemId: $itemId, type: $type}), {
+              _id
+            }
+          }
+        `,
+        variables: {
+          itemId: userLike._id,
+          type: 'photo'
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      console.log(response);
+      likes.splice(indexUserLike, 1);
+      setItemData(prev => (
+        {
+          ...prev,
+          likes: [...likes],
+        }
+      ));
+      setUpdateLike(false);
+    } catch (error) {
+      console.log(error);
+      setUpdateLike(false);
+    }
   }
 
   return (
@@ -121,7 +194,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
       </div>
       <div className="flex w-full justify-between items-center pt-2">
         <div className="flex items-center">
-          <ButtonLike value={liked} disabled={updateLike} onClick={onLikeHandler}/>
+          <ButtonLike value={liked} disabled={updateLike} onClick={likeToggle}/>
           {
             itemData && showComments && (
               <button className="ml-4" onClick={() => commentsCallback(itemData._id)}>

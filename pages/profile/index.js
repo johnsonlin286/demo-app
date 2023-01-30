@@ -29,16 +29,14 @@ const Profile = ({ photosData }) => {
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
-    // const user = Cookies.get('user');
-    // if (!user) {
-    //   router.push('/signin')
-    // } else setUser(JSON.parse(user));
+    const user = Cookies.get('user');
+    if (user) setUser(JSON.parse(user));
   }, []);
 
   useEffect(() => {
     if (photosData) {
-      setData(photosData.data);
-      setTotalPost(photosData.total);
+      setData(photosData.userPhotos.data);
+      setTotalPost(photosData.userPhotos.total);
       setFetchData(false);
     }
   }, [photosData]);
@@ -109,15 +107,15 @@ const Profile = ({ photosData }) => {
   };
 
   const windowScroll = () => {
-    let docOffsetheight = document.body.offsetHeight;
-    if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
-      if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
-    }
+    // let docOffsetheight = document.body.offsetHeight;
+    // if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
+    //   if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
+    // }
   };
 
   useEffect(() => {
-    document.addEventListener('scroll', windowScroll);
-    return () => document.removeEventListener('scroll', windowScroll);
+    // document.addEventListener('scroll', windowScroll);
+    // return () => document.removeEventListener('scroll', windowScroll);
   }, [windowScroll]);
   
   return (
@@ -204,12 +202,40 @@ export default Profile;
 
 export async function getServerSideProps (context) {
   try {
-    const user = JSON.parse(context.req.cookies.user);
-    if (!user) throw new Error('User not authorize!');
-    const response = await API.get(PHOTOS + `/user/${user._id}?offset=0`);
+    const token = context.req.cookies.auth_token || null;
+    const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
+    if (!token) {
+      router.push('/signin');
+      return;
+    }
+    const reqBody = {
+      query: `
+        query userPhotos($userId: ID!, $skip: Float, $limit: Float) {
+          userPhotos(userId: $userId, skip: $skip, limit: $limit) {
+            data {
+              _id
+              imageUrl
+              likes {
+                _id
+                user {
+                  _id
+                }
+              }
+            }
+            total
+          }
+        }
+      `,
+      variables: {
+        userId: user.id,
+        skip: 0,
+        limit: 20
+      }
+    }
+    const response = await API.post(process.env.API_URL, reqBody);
     return {
       props: {
-        photosData: response.data,
+        photosData: response.data
       }
     }
   } catch (error) {
