@@ -64,48 +64,13 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
       router.push('/signin');
       return;
     }
-    // setLiked(status);
+    setLiked(status);
     if (status) {
       // like
       likeHandler();
-      // const likesData = itemData.likes;
-      // const likeItem = likesData.find(data => data.user === user._id);
-      // const indexItem = likesData.indexOf(likeItem);
-      // if (likeItem) {
-      //   setUpdateLike(true);
-      //   await unlikePost(likeItem._id).then(() => {
-      //     likesData.splice(indexItem, 1);
-      //     setItemData(prev => (
-      //       {
-      //         ...prev,
-      //         likes: [...likesData],
-      //       }
-      //     ));
-      //     setUpdateLike(false);
-      //   }).catch((error) => {
-      //     console.log(error);
-      //     setUpdateLike(false);
-      //   });
-      // }
     } else {
       // dislike
       dislikeHandler()
-      // const likesData = itemData.likes;
-      // setUpdateLike(true);
-      // await likePost(itemData._id).then((response) => {
-      //   const result = response.data.data;
-      //   likesData.push({_id: result._id, user: result.user})
-      //   setItemData(prev => (
-      //     {
-      //       ...prev,
-      //       likes: [...likesData],
-      //     }
-      //   ));
-      //   setUpdateLike(false);
-      // }).catch((error) => {
-      //   console.log(error);
-      //   setUpdateLike(false);
-      // });
     };
   }
 
@@ -162,7 +127,6 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
         }
       };
       const response = await API.post(process.env.API_URL, reqBody);
-      console.log(response);
       likes.splice(indexUserLike, 1);
       setItemData(prev => (
         {

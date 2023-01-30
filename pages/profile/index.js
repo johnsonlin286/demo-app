@@ -66,23 +66,36 @@ const Profile = ({ photosData }) => {
   }
 
   const deleteUserPhoto = async () => {
-    setOnRemove(true);
-    await API.delete(PHOTOS + `/${pickedPhotoId}`)
-      .then((response) => {
-        const allPhoto = data;
-        const photo = data.find(item => item._id === pickedPhotoId);
-        const indexPhoto = allPhoto.indexOf(photo);
-        allPhoto.splice(indexPhoto, 1);
-        setData([...allPhoto]);
-        setPickedPhotoId();
-        setOnRemove(false);
-        hideConfirmWindow();
-      })
-      .catch((error) => {
-        console.log(error);
-        setOnRemove(false);
-        hideConfirmWindow();
-      });
+    try {
+      setOnRemove(true);
+      const allPhoto = data;
+      const photo = data.find(item => item._id === pickedPhotoId);
+      const indexPhoto = allPhoto.indexOf(photo);
+      const reqBody = {
+        query: `
+          mutation deletePost($photoId: ID!){
+            deletePost(photoId: $photoId), {
+              _id
+              imageUrl
+              caption
+            }
+          }
+        `,
+        variables: {
+          photoId: pickedPhotoId,
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      console.log(response);
+      allPhoto.splice(indexPhoto, 1);
+      setData([...allPhoto]);
+      setOnRemove(false);
+      hideConfirmWindow();
+    } catch (error) {
+      console.log(error);
+      setOnRemove(false);
+      hideConfirmWindow();
+    }
   }
 
   const dismissBottomSheet = () => {

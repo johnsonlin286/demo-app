@@ -21,11 +21,11 @@ const EditPost = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // const user = Cookies.get('user');
-    // if (!user) {
-    //   router.push('/signin');
-    //   return;
-    // }
+    const user = Cookies.get('user');
+    if (!user) {
+      router.push('/signin');
+      return;
+    }
   }, []);
 
   useEffect(() => {
@@ -39,8 +39,21 @@ const EditPost = () => {
   const fetchPost = async () => {
     try {
       setFetching(true);
-      const response = await API.get(PHOTOS + `/${postId}`);
-      if (response.data.data) setFormData(response.data.data);
+      const reqBody = {
+        query: `
+          query ($photoId: ID!){
+            photo(photoId: $photoId), {
+              imageUrl
+              caption
+            }
+          }
+        `,
+        variables: {
+          photoId: postId
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      setFormData(response.data.photo);
       setFetching(false);
     } catch (error) {
       console.log(error);
@@ -68,14 +81,23 @@ const EditPost = () => {
   const submitForm = async () => {
     try {
       setSaving(true);
-      const params = {
-        imageUrl: formData.imageUrl,
-        caption: formData.caption,
+      const reqBody = {
+        query: `
+          mutation updatePost($postId: ID!, $caption: String!) {
+            updatePost(updatePostInput: {photoId: $postId, caption: $caption}), {
+              _id
+              imageUrl
+              caption
+            }
+          }
+        `,
+        variables: {
+          postId: postId,
+          caption: formData.caption,
+        }
       };
-      const response = await API.patch(PHOTOS + `/${postId}`, params);
-      if (response.data.status === 200) {
-        router.back();
-      }
+      await API.post(process.env.API_URL, reqBody);
+      router.back();
       setSaving(false);
     } catch (error) {
       console.log(error);
