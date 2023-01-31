@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { API } from '../../endpoints/api';
-import { PHOTOS, COMMENT } from "../../endpoints/url";
+// import { PHOTOS, COMMENT } from "../../endpoints/url";
 import Header from "../../components/header";
 import PhotoPreview from "../../components/photo-preview";
 import { Icon } from '@iconify/react';
@@ -130,6 +130,8 @@ const Profile = ({ photosData }) => {
   const dismissBottomSheet = () => {
     setPickedPhotoId();
     setShowComments(false);
+    setCommentsData();
+    setTotalComments(0);
   };
 
   const fetchComments = async (photoId) => {
@@ -171,20 +173,13 @@ const Profile = ({ photosData }) => {
         `,
         variables: {
           photoId: photoId,
-          skip: commentsData && commentsData.length || 0,
-          limit: 5
+          skip: 0,
+          limit: 4
         }
       };
       const response = await API.post(process.env.API_URL, reqBody);
       const result = response.data.comments;
-      if (result.data && result.data.length > 0) {
-        if (commentsData && commentsData.length > 0) {
-          setCommentsData(prev => [
-            ...prev,
-            ...result.data,
-          ])
-        } else setCommentsData([...result.data]);
-      };
+      setCommentsData(result.data);
       setTotalComments(result.total);
       setFetchingComments(false);
     } catch (error) {
@@ -192,6 +187,57 @@ const Profile = ({ photosData }) => {
       setFetchingComments(false);
     }
   };
+
+  const fetchMoreComments = async () => {
+    if (commentsData.length < totalComments) {
+      try {
+        const reqBody = {
+          query: `
+            query comments($photoId: ID!, $skip: Float, $limit: Float) {
+              comments(photoId: $photoId, skip: $skip, limit: $limit), {
+                data {
+                  _id
+                  message
+                  user {
+                    _id
+                    name
+                  }
+                  reply {
+                    _id
+                    message
+                    user {
+                      _id
+                      name
+                    }
+                  }
+                  likes {
+                    _id
+                    user {
+                      _id
+                    }
+                  }
+                }
+                total
+              }
+            }
+          `,
+          variables: {
+            photoId: pickedPhotoId,
+            skip: commentsData.length,
+            limit: 4
+          }
+        }; 
+        const response = await API.post(process.env.API_URL, reqBody);
+        const result = response.data.comments;
+        setCommentsData(prev => [
+          ...prev,
+          ...result.data
+        ]);
+      } catch (error) {
+        throw error
+      }
+    }
+  }
 
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
@@ -253,11 +299,7 @@ const Profile = ({ photosData }) => {
       </div>
       <BottomSheet open={showComments} onDismiss={dismissBottomSheet}>
         {
-          fetchingComments ? (
-            <div className="flex min-w-full min-h-full justify-center items-center">
-              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
-            </div>
-          ) : user && pickedPhotoData && commentsData ? (
+          user && pickedPhotoData && commentsData && (
             <>
               <h3 className="text-xl font-medium mb-4">Comments</h3>
               <div className="flex items-center mb-4">
@@ -267,8 +309,21 @@ const Profile = ({ photosData }) => {
                   {pickedPhotoData.caption}
                 </p>
               </div>
-              <CommentsSection photoId={pickedPhotoId} comments={commentsData} user={user}/>
+              <CommentsSection
+                photoId={pickedPhotoId}
+                comments={commentsData}
+                total={totalComments}
+                user={user}
+                loadMoreCallback={fetchMoreComments}
+              />
             </>
+          )
+        }
+        {
+          fetchingComments ? (
+            <div className="flex min-w-full min-h-full justify-center items-center">
+              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+            </div>
           ) : null
         }
       </BottomSheet>

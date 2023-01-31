@@ -1,28 +1,40 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { API } from '../endpoints/api';
-import { COMMENT, COMMENT_REPLY } from '../endpoints/url';
+// import { COMMENT, COMMENT_REPLY } from '../endpoints/url';
 import CommentForm from './comment-form';
 import CommentItem from './comment-item';
 import { Icon } from '@iconify/react';
 import closeOutline from '@iconify/icons-ion/close-outline';
+import loadingIcon from '@iconify/icons-mdi/loading';
 import PropTypes from 'prop-types';
 
 const propTypes = {
   photoId: PropTypes.string,
   comments: PropTypes.arrayOf(PropTypes.object),
+  total: PropTypes.number,
   user: PropTypes.object,
+  loadMoreCallback: PropTypes.func,
   className: PropTypes.string,
 };
 
-const defaultProps = {};
+const defaultProps = {
+  loadMoreCallback: () => null,
+};
 
-const CommentsSection = ({ photoId, comments, user, className }) => {
+const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, className }) => {
   const listElm = useRef(null);
   const [commentsData, setCommentsData] = useState();
   const [dataLength, setDataLength] = useState();
   const [userData, setUserData] = useState();
   const [postComment, setPostComment] = useState(false);
   const [replyData, setReplyData] = useState();
+  const [showBottomElm, setShowBottomElm] = useState(true);
+  const observerOptions = useMemo(() => {
+    return {
+      treshold: 1,
+      rootMargin: '0px 0px 0px 0px'
+    }
+  }, []);
   
   useEffect(() => {
     if (comments) {
@@ -36,11 +48,34 @@ const CommentsSection = ({ photoId, comments, user, className }) => {
       listElm.current.scroll({top: listElm.current.scrollHeight, behavior: 'smooth'});
       setDataLength(commentsData.length);
     }
+    const bottomElm = document.querySelector('#bottomElm');
+    if (!bottomElm) return;
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) {
+          if (commentsData.length < total) {
+            setShowBottomElm(true);
+          }
+        } else {
+          setShowBottomElm(false);
+        };
+      })
+    }, observerOptions);
+
+    observer.observe(bottomElm);
+    
+    return () => observer.unobserve(bottomElm);
   }, [commentsData]);
 
   useEffect(() => {
     if (user) setUserData(user);
   }, [user]);
+
+  useEffect(() => {
+    if (!showBottomElm) {
+      loadMoreCallback();
+    }
+  }, [showBottomElm]);
 
   const replyHandler = (id, replyTo) => {
     setReplyData({
@@ -157,6 +192,13 @@ const CommentsSection = ({ photoId, comments, user, className }) => {
           )) : (
             <p className="font-medium text-xl">No comments yet...</p>
           )
+        }
+        {
+          showBottomElm ? (
+            <div id="bottomElm" className="flex min-w-full h-8 justify-center items-center">
+              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+            </div>
+          ) : null
         }
       </div>
       <div className="flex h-12 justify-between items-center py-3">
