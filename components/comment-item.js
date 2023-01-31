@@ -1,5 +1,6 @@
 import Avatar from './avatar';
 import PropTypes from 'prop-types';
+import ButtonLike from './button-like';
 
 const propTypes = {
   data: PropTypes.shape({
@@ -29,6 +30,10 @@ const CommentItem = ({ data, onReply }) => {
         <br/>
         <a role="button" className="font-medium text-xs text-sky-400 mt-3" onClick={(e) => { e.preventDefault(); onReply(); }}>Reply</a>
       </p>
+      <span className="flex flex-col items-center">
+        <ButtonLike/>
+        {`999`}
+      </span>
     </div>
   );
 };

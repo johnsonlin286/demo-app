@@ -26,6 +26,7 @@ const Profile = ({ photosData }) => {
   const [onRemove, setOnRemove] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [commentsData, setCommentsData] = useState();
+  const [totalComments, setTotalComments] = useState(0);
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
@@ -44,11 +45,39 @@ const Profile = ({ photosData }) => {
   const fetchUserPhotos = async () => {
     try {
       setFetchData(true);
-      const response = await API.get(PHOTOS + `/user/${user._id}?offset=${data ? data.length : 0}`);
-      if (data && data.length > 0) {
-        setData(prev => [...prev, ...response.data.data]);
-      } else setData(response.data.data);
-      setTotalPost(response.data.total);
+      const reqBody = {
+        query: `
+          query userPhotos($userId: ID!, $skip: Float, $limit: Float) {
+            userPhotos(userId: $userId, skip: $skip, limit: $limit) {
+              data {
+                _id
+                imageUrl
+                caption
+                likes {
+                  _id
+                  user {
+                    _id
+                  }
+                }
+              }
+              total
+            }
+          }
+        `,
+        variables: {
+          userId: user.id,
+          skip: data && data.length || 0,
+          limit: 2
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.userPhotos;
+      if (result.data && result.data.length > 0) {
+        setData(prev => [
+          ...prev,
+          ...result.data,
+        ]);
+      };
       setFetchData(false);
     } catch (error) {
       setFetchData(false);
@@ -106,12 +135,57 @@ const Profile = ({ photosData }) => {
   const fetchComments = async (photoId) => {
     setShowComments(true);
     setPickedPhotoId(photoId);
+    const photoData = data.find(photo => photo._id === photoId);
+    setPickedPhotoData(photoData);
     try {
       setFetchingComments(true);
-      const photoData = await data.find(photo => photo._id === photoId);
-      if (photoData) setPickedPhotoData(photoData);
-      const response = await API.get(COMMENT + `/${photoId}`);
-      setCommentsData(response.data);
+      const reqBody = {
+        query: `
+          query comments($photoId: ID!, $skip: Float, $limit: Float) {
+            comments(photoId: $photoId, skip: $skip, limit: $limit), {
+              data {
+                _id
+                message
+                user {
+                  _id
+                  name
+                }
+                reply {
+                  _id
+                  message
+                  user {
+                    _id
+                    name
+                  }
+                }
+                likes {
+                  _id
+                  user {
+                    _id
+                  }
+                }
+              }
+              total
+            }
+          }
+        `,
+        variables: {
+          photoId: photoId,
+          skip: commentsData && commentsData.length || 0,
+          limit: 5
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.comments;
+      if (result.data && result.data.length > 0) {
+        if (commentsData && commentsData.length > 0) {
+          setCommentsData(prev => [
+            ...prev,
+            ...result.data,
+          ])
+        } else setCommentsData([...result.data]);
+      };
+      setTotalComments(result.total);
       setFetchingComments(false);
     } catch (error) {
       console.log(error);
@@ -120,15 +194,15 @@ const Profile = ({ photosData }) => {
   };
 
   const windowScroll = () => {
-    // let docOffsetheight = document.body.offsetHeight;
-    // if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
-    //   if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
-    // }
+    let docOffsetheight = document.body.offsetHeight;
+    if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
+      if (data && data.length < totalPost && !fetchData) fetchUserPhotos();
+    }
   };
 
   useEffect(() => {
-    // document.addEventListener('scroll', windowScroll);
-    // return () => document.removeEventListener('scroll', windowScroll);
+    document.addEventListener('scroll', windowScroll);
+    return () => document.removeEventListener('scroll', windowScroll);
   }, [windowScroll]);
   
   return (
@@ -228,6 +302,7 @@ export async function getServerSideProps (context) {
             data {
               _id
               imageUrl
+              caption
               likes {
                 _id
                 user {
@@ -242,7 +317,7 @@ export async function getServerSideProps (context) {
       variables: {
         userId: user.id,
         skip: 0,
-        limit: 20
+        limit: 2
       }
     }
     const response = await API.post(process.env.API_URL, reqBody);

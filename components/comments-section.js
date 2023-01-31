@@ -52,32 +52,90 @@ const CommentsSection = ({ photoId, comments, user, className }) => {
   const submitCommentForm = async (newComment) => {
     try {
       setPostComment(true);
-      let response;
       if (replyData) {
-        response = await API.post(COMMENT_REPLY, { message: newComment, thread_id: replyData.thread_id });
-        const newReply = {
-          _id: response.data.data._id,
-          message: response.data.data.message,
-          user: {
-            _id: userData._id,
-            name: userData.name,
-          },
-        };
-        const thread = await commentsData.find(thread => thread._id === replyData.thread_id);
-        thread.reply.push(newReply);
-        setReplyData();
+        await postReplyThread(newComment).then(() => {
+          setReplyData();
+        });
       } else {
-        response = await API.post(COMMENT, { message: newComment, photo_id: photoId });
-        setCommentsData(prev => [
-          ...prev,
-          response.data.data,
-        ]);
-        listElm.current.scroll({top: 0, behavior: 'smooth'});
+        await postNewThread(newComment).then(() => {
+          listElm.current.scroll({top: 0, behavior: 'smooth'});
+        });
       }
       setPostComment(false);
     } catch (error) {
       console.log(error);
       setPostComment(false);
+    }
+  }
+
+  const postNewThread = async (newComment) => {
+    try {
+      const reqBody = {
+        query: `
+          mutation postComment($threadId: ID!, $message: String!) {
+            postComment(commentInput: {threadId: $threadId, message: $message}), {
+              _id
+              message
+              user {
+                _id
+                name
+              }
+              reply {
+                _id
+              }
+              likes {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          threadId: photoId,
+          message: newComment,
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.postComment;
+      setCommentsData(prev => [
+        ...prev,
+        result,
+      ])
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  const postReplyThread = async (newComment) => {
+    try {
+      const reqBody = {
+        query: `
+          mutation postReply($threadId: ID!, $message: String!) {
+            postReply(commentInput: {threadId: $threadId, message: $message}), {
+              _id
+              message
+              user {
+                _id
+                name
+              }
+              likes {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          threadId: replyData.thread_id,
+          message: newComment,
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.postReply;
+      const thread = await commentsData.find(thread => thread._id === replyData.thread_id);
+      thread.reply.push(result);
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 
