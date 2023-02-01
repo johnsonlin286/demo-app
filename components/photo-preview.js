@@ -59,7 +59,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     }
   }, [photo, user]);
 
-  const likeToggle = async (status) => {
+  const likeToggle = (status) => {
     if (!user) {
       router.push('/signin');
       return;
@@ -111,7 +111,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
     try {
       setUpdateLike(true);
       const likes = itemData.likes;
-      const userLike = likes.find(like => like.user._id === user.id);
+      const userLike = await likes.find(like => like.user._id === user.id);
       const indexUserLike = likes.indexOf(userLike);
       const reqBody = {
         query: `

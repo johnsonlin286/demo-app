@@ -36,6 +36,7 @@ const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, cla
     }
   }, []);
   
+  
   useEffect(() => {
     if (comments) {
       setCommentsData(comments);
@@ -174,17 +175,130 @@ const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, cla
     }
   }
 
+  const likeToggle = (status, itemId) => {
+    if (status) {
+      // like
+      likeHandler(itemId);
+    } else {
+      // dislike
+      dislikeHandler(itemId);
+    }
+  }
+
+  const likeHandler = async (itemId) => {
+    try {
+      const cloneData = commentsData;
+      let comment = await cloneData.find(comment => comment._id === itemId);
+      let reply = false;
+      if (!comment) {
+        await cloneData.map(item => {
+          comment = item.reply.find(reply => reply._id === itemId);
+          reply = true;
+        });
+      }
+      const reqBody = {
+        query: `
+          mutation like($itemId: ID!, $type: String!) {
+            like(likeInput: {itemId: $itemId, type: $type}), {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: comment._id,
+          type: 'comment',
+        }
+      };
+      const response = await API.post(process.env.API_URL, reqBody);
+      const result = response.data.like;
+      comment.likes.push(result);
+      cloneData.map(item => {
+        if (!reply) {
+          if (item._id === comment._id) {
+            item = comment;
+          }
+        } else {
+          item.reply.map(reply => {
+            if (reply._id === comment._id) {
+              reply = comment;
+            }
+          })
+        }
+      });
+      setCommentsData([...cloneData]);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  const dislikeHandler = async (itemId) => {
+    try {
+      const cloneData = commentsData;
+      let comment = await cloneData.find(comment => comment._id === itemId);
+      let isReply = false;
+      if (!comment) {
+        await cloneData.map(item => {
+          comment = item.reply.find(reply => reply._id === itemId);
+          isReply = true;
+        });
+      }
+      const userLike = await comment.likes.find(item => item.user._id === userData.id);
+      const indexUserLike = await comment.likes.indexOf(userLike);
+      const reqBody = {
+        query: `
+          mutation dislike($itemId: ID!, $type: String!) {
+            dislike(likeInput: {itemId: $itemId, type: $type}), {
+              _id
+              user {
+                _id
+              }
+            }
+          }
+        `,
+        variables: {
+          itemId: userLike._id,
+          type: 'comment',
+        }
+      };
+      setCommentsData([...cloneData]);
+      await API.post(process.env.API_URL, reqBody).then(() => {
+        comment.likes.splice(indexUserLike, 1);
+        cloneData.map(item => {
+          if (!isReply) {
+            if (item._id === comment._id) {
+              item = comment;
+            }
+          } else {
+            item.reply.map(reply => {
+              if (reply._id === comment._id) {
+                reply = comment;
+              }
+            })
+          }
+        });
+        setCommentsData([...cloneData]);
+      });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
   return (
     <div className={`flex flex-col justify-between min-h-full comments-section border-t pt-4${className ? ` ${className}` : ''}`}>
       <div id="comment-list" ref={listElm} className={`comments-list${commentsData && commentsData.length <= 0 ? ' flex h-[100px] justify-center items-center' : ' h-[200px]'} overflow-y-auto mb-4`}>
         {
           commentsData && commentsData.length > 0 ? commentsData.map((item, i) => (
             <span className="comment-item" key={i}>
-              <CommentItem data={item} onReply={() => replyHandler(item._id, item.user.name)}/>
+              <CommentItem data={item} onReply={() => replyHandler(item._id, item.user.name)} likeToggle={(status) => likeToggle(status, item._id)}/>
               {
                 item.reply && item.reply.length > 0 ? item.reply.map((reply, j) => (
                   <div className="comment-item reply pl-10" key={j}>
-                    <CommentItem data={reply} onReply={() => replyHandler(item._id, reply.user.name)}/>
+                    <CommentItem data={reply} onReply={() => replyHandler(item._id, reply.user.name)} likeToggle={(status) => likeToggle(status, reply._id)}/>
                   </div>
                 )) : null
               }

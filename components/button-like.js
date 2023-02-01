@@ -6,18 +6,20 @@ import loadingIcon from '@iconify/icons-mdi/loading';
 import PropTypes from 'prop-types';
 
 const propTypes = {
+  size: PropTypes.oneOf(['sm', 'default']),
   value: PropTypes.bool,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
 };
 
 const defaultProps = {
+  size: 'default',
   value: false,
   disabled: false,
   onClick: () => null,
 };
 
-const ButtonLike = ({ value, disabled, onClick }) => {
+const ButtonLike = ({ size, value, disabled, onClick }) => {
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const ButtonLike = ({ value, disabled, onClick }) => {
         disabled && <Icon icon={loadingIcon} width="18" className="absolute inline-block animate-spin text-gray-300 align-text-top"/>
       }
       {
-        liked ? <Icon icon={heartIcon} width="32" className={`text-red-600${disabled ? ' opacity-20': ''}`} /> : <Icon icon={heartOutline} width="32" className={disabled ? 'opacity-20' : ''} />
+        liked ? <Icon icon={heartIcon} width={size === 'default' ? '32' : '24'} className={`text-red-600${disabled ? ' opacity-20': ''}`} /> : <Icon icon={heartOutline} width={size === 'default' ? '32' : '24'} className={disabled ? 'opacity-20' : ''} />
       }
     </button>
   );

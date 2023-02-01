@@ -159,6 +159,12 @@ const Profile = ({ photosData }) => {
                     _id
                     name
                   }
+                  likes {
+                    _id
+                    user {
+                      _id
+                    }
+                  }
                 }
                 likes {
                   _id
