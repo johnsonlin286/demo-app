@@ -11,7 +11,7 @@ import logOutSharp from '@iconify/icons-ion/log-out-sharp';
 import Avatar from './avatar';
 import Dropdown from './dropdown';
 
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 const propTypes = {};
 
@@ -47,7 +47,7 @@ const BottomNav = () => {
                   {
                     label: 'Profile',
                     icon: personIcon,
-                    link: '/profile',
+                    link: `/profile/${user.id}`,
                     className: 'text-sky-400',
                   },
                   {

@@ -31,7 +31,9 @@ const Profile = ({ photosData }) => {
 
   useEffect(() => {
     const user = Cookies.get('user');
-    if (user) setUser(JSON.parse(user));
+    if (user) {
+      setUser(JSON.parse(user))
+    } fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -41,6 +43,26 @@ const Profile = ({ photosData }) => {
       setFetchData(false);
     }
   }, [photosData]);
+
+  const fetchUserData = async () => {
+    const reqBody = {
+      query: `
+        query profile($userId: ID!){
+          profile(userId: $userId), {
+            _id
+            name
+            email
+          }
+        }
+      `,
+      variables: {
+        userId: router.query.id
+      }
+    };
+    const response = await API.post(process.env.API_URL, reqBody);
+    const result = response.data.profile;
+    setUser({id: result._id, name: result.name, email: result.email});
+  }
 
   const fetchUserPhotos = async () => {
     try {
@@ -319,7 +341,7 @@ const Profile = ({ photosData }) => {
                 photoId={pickedPhotoId}
                 comments={commentsData}
                 total={totalComments}
-                user={user}
+                // user={user}
                 loadMoreCallback={fetchMoreComments}
               />
             </>
@@ -350,12 +372,7 @@ export default Profile;
 
 export async function getServerSideProps (context) {
   try {
-    const token = context.req.cookies.auth_token || null;
     const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
-    if (!token) {
-      router.push('/signin');
-      return;
-    }
     const reqBody = {
       query: `
         query userPhotos($userId: ID!, $skip: Float, $limit: Float) {
@@ -376,7 +393,7 @@ export async function getServerSideProps (context) {
         }
       `,
       variables: {
-        userId: user.id,
+        userId: user ? user.id : context.query.id,
         skip: 0,
         limit: 2
       }
@@ -390,8 +407,8 @@ export async function getServerSideProps (context) {
   } catch (error) {
     return {
       redirect: {
-          destination: '/signin',
-          statusCode: 307
+        destination: '/',
+        statusCode: 307
       }
     }
   }

@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API } from '../endpoints/api';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 // import { COMMENT, COMMENT_REPLY } from '../endpoints/url';
 import CommentForm from './comment-form';
 import CommentItem from './comment-item';
@@ -12,7 +14,6 @@ const propTypes = {
   photoId: PropTypes.string,
   comments: PropTypes.arrayOf(PropTypes.object),
   total: PropTypes.number,
-  user: PropTypes.object,
   loadMoreCallback: PropTypes.func,
   className: PropTypes.string,
 };
@@ -21,8 +22,9 @@ const defaultProps = {
   loadMoreCallback: () => null,
 };
 
-const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, className }) => {
+const CommentsSection = ({ photoId, comments, total, loadMoreCallback, className }) => {
   const listElm = useRef(null);
+  const router = useRouter();
   const [commentsData, setCommentsData] = useState();
   const [dataLength, setDataLength] = useState();
   const [userData, setUserData] = useState();
@@ -36,6 +38,10 @@ const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, cla
     }
   }, []);
   
+  useEffect(() => {
+    const user = Cookies.get('user');
+    if (user) setUserData(user);
+  }, []);
   
   useEffect(() => {
     if (comments) {
@@ -69,16 +75,16 @@ const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, cla
   }, [commentsData]);
 
   useEffect(() => {
-    if (user) setUserData(user);
-  }, [user]);
-
-  useEffect(() => {
     if (!showBottomElm) {
       loadMoreCallback();
     }
   }, [showBottomElm]);
 
   const replyHandler = (id, replyTo) => {
+    if (!userData) {
+      router.push('/signin');
+      return;
+    }
     setReplyData({
       thread_id: id,
       toUser: replyTo,
@@ -176,6 +182,10 @@ const CommentsSection = ({ photoId, comments, total, user, loadMoreCallback, cla
   }
 
   const likeToggle = (status, itemId) => {
+    if (!userData) {
+      router.push('/signin');
+      return;
+    }
     if (status) {
       // like
       likeHandler(itemId);

@@ -51,7 +51,7 @@ const CommentItem = ({ data, onReply, likeToggle }) => {
         <strong className="inline-block mr-2">{data.user.name || 'No Name'}</strong>
         {data.message || ''}
         <br/>
-        <button className="font-medium text-xs text-sky-400 mt-3" onClick={(e) => { e.preventDefault(); onReply(); }}>Reply</button>
+        <button className="font-medium text-xs text-sky-400 mt-3" onClick={onReply}>Reply</button>
       </p>
       <span className="flex flex-col items-center text-xs px-3">
         <ButtonLike size="sm" value={like} onClick={likeToggle}/>

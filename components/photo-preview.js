@@ -168,7 +168,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
           }
         </div>
         {
-          itemData ? canEdit && canDelete ? (
+          itemData && user ? canEdit && canDelete ? (
             <Dropdown
               top
               menu={[

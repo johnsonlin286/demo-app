@@ -80,7 +80,7 @@ export default function PageSignin() {
       Cookies.set('auth_token', data.token, { expires: expireTime });
       Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: 1 });
       setLoading(false);
-      router.push('/profile');
+      router.push(`/profile/${data._id}`);
     } catch (err) {
       setLoading(false);
       setErrMsg(current => (
