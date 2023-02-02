@@ -40,7 +40,7 @@ const CommentsSection = ({ photoId, comments, total, loadMoreCallback, className
   
   useEffect(() => {
     const user = Cookies.get('user');
-    if (user) setUserData(user);
+    if (user) setUserData(JSON.parse(user));
   }, []);
   
   useEffect(() => {

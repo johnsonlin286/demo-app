@@ -70,7 +70,7 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
       likeHandler();
     } else {
       // dislike
-      dislikeHandler()
+      dislikeHandler();
     };
   }
 
@@ -82,6 +82,9 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
           mutation like($itemId: ID!, $type: String!) {
             like(likeInput: {itemId: $itemId, type: $type}), {
               _id
+              user {
+                _id
+              }
             }
           }
         `,
@@ -126,15 +129,16 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
           type: 'photo'
         }
       };
-      const response = await API.post(process.env.API_URL, reqBody);
-      likes.splice(indexUserLike, 1);
-      setItemData(prev => (
-        {
-          ...prev,
-          likes: [...likes],
-        }
-      ));
-      setUpdateLike(false);
+      await API.post(process.env.API_URL, reqBody).then(() => {
+        likes.splice(indexUserLike, 1);
+        setItemData(prev => (
+          {
+            ...prev,
+            likes: [...likes],
+          }
+        ));
+        setUpdateLike(false);
+      });
     } catch (error) {
       console.log(error);
       setUpdateLike(false);
@@ -148,12 +152,14 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
           itemData && <Image src={itemData.imageUrl} alt={itemData.caption} wrapperClassName="rounded-lg overflow-hidden"/>
         }
         {
-          itemData && itemData.user ? (
-            <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black/50">
-              <Avatar size="sm" shape="circle" border alt={itemData.user.name}/>
-              <p className="text-lg font-medium text-white ml-2">{itemData.user.name}</p>
-            </div>
-          ) : null
+          // itemData && itemData.user ? (
+          //   <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black/50">
+          //     <Link href={`/profile/${itemData.user._id}`} className="flex">
+          //       <Avatar size="sm" shape="circle" border alt={itemData.user.name}/>
+          //       <p className="text-lg font-medium text-white ml-2">{itemData.user.name}</p>
+          //     </Link>
+          //   </div>
+          // ) : null
         }
       </div>
       <div className="flex w-full justify-between items-center pt-2">
@@ -204,8 +210,21 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
       {
         itemData && itemData.likes.length > 0 && <p className="pl-2">{`${itemData.likes.length} Like${itemData.likes.length > 1 ? 's' : ''}`}</p>
       }
-      <p className="mt-2 pl-2 italic">
-        {itemData && itemData.caption}
+      <p className="mt-3 pl-2 italic">
+        {
+          itemData && (
+            <>
+              {
+                itemData.user && (
+                  <Link href={`/profile/${itemData.user._id}`} className="inline-block font-semibold mr-2">
+                    {itemData.user.name}
+                  </Link>
+                )
+              }
+              {itemData.caption}
+            </>
+          )
+        }
       </p>
     </>
   );

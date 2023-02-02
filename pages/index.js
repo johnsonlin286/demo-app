@@ -159,7 +159,7 @@ export default function Home({ photosData }) {
             <GalleryGrid>
               {
                 data.map((item, i) => (
-                  <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} onClick={() => null}/>
+                  <ThumbnailImg key={i} src={item.imageUrl} alt={item.caption} href={`/photo/${item._id}`}/>
                 ))
               }
             </GalleryGrid>

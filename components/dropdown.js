@@ -57,10 +57,10 @@ const Dropdown = ({ top, menu, children }) => {
                           {item.label}
                         </Link>
                       ) : (
-                        <a role="button" className={`flex justify-end items-center hover:underline hover:bg-gray-200 text-right py-2 px-4 ${(i + 1) < menu.length ? 'border-b border-b-gray-200' : ''}${item.className ? ` ${item.className}` : ''}`} onClick={(e) => { e.preventDefault(); item.onClick(); setShowNav(false); }}>
+                        <button className={`flex justify-end items-center hover:underline hover:bg-gray-200 text-right py-2 px-4 ${(i + 1) < menu.length ? 'border-b border-b-gray-200' : ''}${item.className ? ` ${item.className}` : ''}`} onClick={() => { item.onClick(); setShowNav(false); }}>
                           {item.icon && <Icon icon={item.icon} className="mr-1" />}
                           {item.label}
-                        </a>
+                        </button>
                       )
                     }
                   </li>
