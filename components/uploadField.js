@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import ImageCropper from './imageCropper';
+import { Icon } from '@iconify/react';
+import imageSharp from '@iconify/icons-ion/image-sharp';
 import PropTypes from 'prop-types';
 
 const propTypes = {
@@ -14,19 +17,23 @@ const defaultProps = {
 const UploadField = ({ error, onChange }) => {
   const ref = useRef(null);
   const [dragOver, setDragOver] = useState(false);
+  const [tempImage, setTempImage] = useState();
   const [imgPreview, setImgPreview] = useState();
+  // const [cropImage, setCropImg] = useState(false);
   const [errMsg, setErrMsg] = useState();
 
   useEffect(() => {
     const dropzone = ref.current;
-    dropzone.addEventListener('dragover', onDragOverHandler);
-    dropzone.addEventListener('dragleave', onDragLeaveHandler);
-    dropzone.addEventListener('drop', onDropHandler);
-
-    return () => {
-      dropzone.removeEventListener('dragover', onDragOverHandler);
-      dropzone.removeEventListener('dragleave', onDragLeaveHandler);
-      dropzone.removeEventListener('drop', onDropHandler);
+    if (dropzone) {
+      dropzone.addEventListener('dragover', onDragOverHandler);
+      dropzone.addEventListener('dragleave', onDragLeaveHandler);
+      dropzone.addEventListener('drop', onDropHandler);
+  
+      return () => {
+        dropzone.removeEventListener('dragover', onDragOverHandler);
+        dropzone.removeEventListener('dragleave', onDragLeaveHandler);
+        dropzone.removeEventListener('drop', onDropHandler);
+      }
     }
   }, []);
 
@@ -50,6 +57,7 @@ const UploadField = ({ error, onChange }) => {
     e.preventDefault();
     e.stopPropagation();
     setDragOver(false);
+    setTempImage();
     setImgPreview();
     
     const files = e.dataTransfer.files;
@@ -57,6 +65,7 @@ const UploadField = ({ error, onChange }) => {
   }
 
   const onChangeHandler = (e) => {
+    setTempImage();
     setImgPreview();
 
     const files = e.target.files;
@@ -83,28 +92,66 @@ const UploadField = ({ error, onChange }) => {
     };
 
     const blobURL = window.URL.createObjectURL(file);
-    setImgPreview(blobURL);
-    
-    onChange(file);
+    setTempImage(blobURL);
+    console.log(file);
+    // setImgPreview(blobURL);
+  }
+
+  const saveCroppedImg = (croppedImageArea) => {
+    const canvasElm = document.createElement('canvas');
+    canvasElm.width = croppedImageArea.width;
+    canvasElm.height = croppedImageArea.height;
+
+    const context = canvasElm.getContext('2d');
+    let imgObj = new Image();
+    imgObj.src = tempImage;
+    imgObj.onload = function () {
+      context.drawImage(
+        imgObj,
+        croppedImageArea.x,
+        croppedImageArea.y,
+        croppedImageArea.width,
+        croppedImageArea.height,
+        0,
+        0,
+        croppedImageArea.width,
+        croppedImageArea.height
+      );
+      const dataURL = canvasElm.toDataURL("image/jpeg");
+      setImgPreview(dataURL);
+      onChange(dataURL);
+    };
   }
 
   return (
-    <div
-      ref={ref}
-      className={`flex justify-center items-center min-w-full h-[300px] border-2 border-dashed rounded-md overflow-hidden${dragOver ? ' border-sky-400' : ''}`}
-    >
+    <>
       {
-        imgPreview ? <img src={imgPreview} className="h-full"/> : (
-          <div>
-            <p className="text-center">Drop image here or</p>
-            <input type="file" onChange={onChangeHandler} accept="image/jpeg,image/png"/>
+        !tempImage ? (
+          <div
+            ref={ref}
+            className={`flex flex-col justify-center items-center min-w-full h-[300px] border-2 border-dashed rounded-md overflow-hidden${dragOver ? ' border-sky-400' : ''}`}
+          >
+            <Icon icon={imageSharp} width="48" className="text-sky-400 mx-auto"/>
+            <p className="text-center mb-3">Drop image here or</p>
+            <label htmlFor="fileInput" className="block btn border rounded-lg text-center cursor-pointer py-2 px-3">
+              Choose File
+              <input id="fileInput" type="file" accept="image/jpeg,image/png" onChange={onChangeHandler} className="invisible w-0 h-0"/>
+            </label>
             {
               errMsg && <p className="text-xs text-center text-red-600">{errMsg}</p>
             }
           </div>
+        ) : imgPreview ? (
+          <div className="flex justify-center items-center min-w-full h-[300px] border-2 border-dashed rounded-md overflow-hidden">
+            <img src={imgPreview} className="h-full"/>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center min-w-full h-[300px]">
+            <ImageCropper imgUrl={tempImage} onCropped={saveCroppedImg}/>
+          </div>
         )
       }
-    </div>
+    </>
   );
 };
 

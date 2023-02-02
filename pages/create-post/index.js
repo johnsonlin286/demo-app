@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { API } from "../../endpoints/api";
 import { PHOTOS } from "../../endpoints/url";
+import decodeBase64Image from '../../utils/decode-base64';
 
 import Header from "../../components/header";
 import Textarea from "../../components/textarea";
@@ -13,6 +14,7 @@ import Button from '../../components/button';
 
 const CreatePost = () => {
   const router = useRouter();
+  const [userData, setUserData] = useState();
   const [formState, setFormState] = useState({
     imageUrl: '',
     caption: '',
@@ -26,7 +28,9 @@ const CreatePost = () => {
     let user = Cookies.get('user');
     if (!user) {
       router.push('/signin');
-    };
+    } else {
+      setUserData(JSON.parse(user));
+    }
   }, []);
 
   const formValidation = (e) => {
@@ -45,11 +49,12 @@ const CreatePost = () => {
     uploadImage();
   };
 
-  const uploadImage = () => {
+  const uploadImage = async () => {
     if (!imageFile) return;
     setLoading(true);
-    const imageRef = ref(storage, `posts/${new Date().toISOString()}_${imageFile.name}`);
-    uploadBytes(imageRef, imageFile)
+    const decodedImage = decodeBase64Image(imageFile, `${userData.id}.jpg`);
+    const imageRef = ref(storage, `posts/${new Date().toISOString()}_${decodedImage.name}`);
+    await uploadBytes(imageRef, decodedImage)
       .then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
           setFormState((prev) => (
@@ -73,11 +78,23 @@ const CreatePost = () => {
 
   const submitPost = async () => {
     try {
-      const response = await API.post(PHOTOS, formState);
-      if (response.data.status === 201) {
-        router.push('/profile');
-      }
-      setLoading(false);
+      const reqBody = {
+        query: `
+          mutation post($imageUrl: String!, $caption: String!) {
+            post(postInput: {imageUrl: $imageUrl, caption: $caption}), {
+              _id
+            }
+          }
+        `,
+        variables: {
+          imageUrl: formState.imageUrl,
+          caption: formState.caption
+        }
+      };
+      await API.post(process.env.API_URL, reqBody).then(() => {
+        router.push(`/profile/${userData.id}`);
+        setLoading(false);
+      });
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -88,18 +105,27 @@ const CreatePost = () => {
     <div className="create-post">
       <Header backBtn title="New Post"/>
       <div className="px-5 md:px-0 pt-4 pb-20">
+        <UploadField error={errMsg.imageUrl || ''} onChange={(file) => setImageFile(file)}/>
         <form onSubmit={formValidation}>
-          <UploadField error={errMsg.imageUrl || ''} onChange={(file) => setImageFile(file)}/>
-          <Textarea id="inputCaption" label="Caption" placeholder="Add your nice caption here..." value={formState.caption} error={errMsg.caption || ''} className="py-4" onChange={(val) => {
-            setFormState((prev) => (
-              {
-                ...prev,
-                caption: val,
-              }
-            ));
-          }}/>
+          <Textarea
+            id="inputCaption"
+            label="Caption"
+            placeholder="Add your nice caption here..."
+            value={formState.caption}
+            error={errMsg.caption || ''}
+            disabled={!imageFile}
+            className="py-4"
+            onChange={(val) => {
+              setFormState((prev) => (
+                {
+                  ...prev,
+                  caption: val,
+                }
+              ));
+            }}
+          />
           <div className="text-right">
-            <Button color="primary" loading={loading} disabled={loading}>
+            <Button color="primary" loading={loading} disabled={!imageFile || loading}>
               Post It!
             </Button>
           </div>
