@@ -53,7 +53,7 @@ const CreatePost = () => {
     if (!imageFile) return;
     setLoading(true);
     const decodedImage = decodeBase64Image(imageFile, `${userData.id}.jpg`);
-    const imageRef = ref(storage, `posts/${new Date().toISOString()}_${decodedImage.name}`);
+    const imageRef = ref(storage, `posts_${process.env.ENVIROMENT}/${new Date().toISOString()}_${decodedImage.name}`);
     await uploadBytes(imageRef, decodedImage)
       .then((snapshot) => {
         getDownloadURL(snapshot.ref).then((url) => {
