@@ -6,3 +6,8 @@
 @import 'button';
 @import 'dropdown';
 @import 'modal';
+@import 'toast';
+
+#nprogress .bar {
+    background: #38bdf8;
+}

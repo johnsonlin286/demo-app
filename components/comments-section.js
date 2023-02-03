@@ -314,7 +314,7 @@ const CommentsSection = ({ photoId, comments, total, loadMoreCallback, className
               }
             </span>
           )) : (
-            <p className="font-medium text-xl">No comments yet...</p>
+            <p className="font-medium text-xl">No comment yet...</p>
           )
         }
         {

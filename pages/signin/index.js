@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { API } from "../../endpoints/api";
 // import { SIGNIN } from "../../endpoints/url";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { AppContext } from "../../context";
 
 import Header from "../../components/header";
 import InputField from "../../components/input-field";
 import Button from "../../components/button";
 
 export default function PageSignin() {
+  const context = useContext(AppContext);
   const router = useRouter();
   const [formState, setFormState] = useState({
     email: '',
@@ -79,8 +81,12 @@ export default function PageSignin() {
       expireTime.setTime(expireTime.getTime() + 24 * 3600 * 1000);
       Cookies.set('auth_token', data.token, { expires: expireTime });
       Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: 1 });
-      setLoading(false);
+      // setLoading(false);
       router.push(`/profile/${data._id}`);
+      context.setToast({
+        visible: true,
+        text: `Hi ${data.name}. Welcomeback!`,
+      });
     } catch (err) {
       setLoading(false);
       setErrMsg(current => (
@@ -94,7 +100,7 @@ export default function PageSignin() {
 
   return (
     <div className="signin">
-      <Header backBtn backRoute="/" title="Sign in"/>
+      <Header backBtn title="Sign in"/>
       <div className="flex flex-col items-center py-20">
         <form onSubmit={formValidation}>
           {

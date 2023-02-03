@@ -151,16 +151,6 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
         {
           itemData && <Image src={itemData.imageUrl} alt={itemData.caption} wrapperClassName="rounded-lg overflow-hidden"/>
         }
-        {
-          // itemData && itemData.user ? (
-          //   <div className="absolute w-full flex items-center top-0 left-0 p-3 bg-gradient-to-r from-black/50">
-          //     <Link href={`/profile/${itemData.user._id}`} className="flex">
-          //       <Avatar size="sm" shape="circle" border alt={itemData.user.name}/>
-          //       <p className="text-lg font-medium text-white ml-2">{itemData.user.name}</p>
-          //     </Link>
-          //   </div>
-          // ) : null
-        }
       </div>
       <div className="flex w-full justify-between items-center pt-2">
         <div className="flex items-center">

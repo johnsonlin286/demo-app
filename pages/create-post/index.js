@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { storage } from "../../utils/firebase";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Cookies from "js-cookie";
@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { API } from "../../endpoints/api";
 // import { PHOTOS } from "../../endpoints/url";
 import decodeBase64Image from '../../utils/decode-base64';
+import { AppContext } from "../../context";
 
 import Header from "../../components/header";
 import Textarea from "../../components/textarea";
@@ -13,6 +14,7 @@ import UploadField from "../../components/uploadField";
 import Button from '../../components/button';
 
 const CreatePost = () => {
+  const context = useContext(AppContext);
   const router = useRouter();
   const [userData, setUserData] = useState();
   const [formState, setFormState] = useState({
@@ -93,7 +95,11 @@ const CreatePost = () => {
       };
       await API.post(process.env.API_URL, reqBody).then(() => {
         router.push(`/profile/${userData.id}`);
-        setLoading(false);
+        context.setToast({
+          visible: true,
+          text: 'Success post photo!',
+        })
+        // setLoading(false);
       });
     } catch (error) {
       console.log(error);
