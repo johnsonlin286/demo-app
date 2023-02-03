@@ -19,9 +19,9 @@ const UploadField = ({ error, onChange }) => {
   const [dragOver, setDragOver] = useState(false);
   const [tempImage, setTempImage] = useState();
   const [imgPreview, setImgPreview] = useState();
-  // const [cropImage, setCropImg] = useState(false);
   const [errMsg, setErrMsg] = useState();
 
+  /*
   useEffect(() => {
     const dropzone = ref.current;
     if (dropzone) {
@@ -36,11 +36,13 @@ const UploadField = ({ error, onChange }) => {
       }
     }
   }, []);
+  */
 
   useEffect(() => {
     if (error) setErrMsg(error);
   }, [error]);
   
+  /*
   const onDragOverHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -63,6 +65,7 @@ const UploadField = ({ error, onChange }) => {
     const files = e.dataTransfer.files;
     imageValidation(files);
   }
+  */
 
   const onChangeHandler = (e) => {
     setTempImage();
@@ -93,8 +96,6 @@ const UploadField = ({ error, onChange }) => {
 
     const blobURL = window.URL.createObjectURL(file);
     setTempImage(blobURL);
-    console.log(file);
-    // setImgPreview(blobURL);
   }
 
   const saveCroppedImg = (croppedImageArea) => {
@@ -131,8 +132,8 @@ const UploadField = ({ error, onChange }) => {
             ref={ref}
             className={`flex flex-col justify-center items-center min-w-full h-[300px] border-2 border-dashed rounded-md overflow-hidden${dragOver ? ' border-sky-400' : ''}`}
           >
-            <Icon icon={imageSharp} width="48" className="text-sky-400 mx-auto"/>
-            <p className="text-center mb-3">Drop image here or</p>
+            <Icon icon={imageSharp} width="48" className="text-sky-400 mx-auto mb-3"/>
+            {/* <p className="text-center mb-3">Drop image here or</p> */}
             <label htmlFor="fileInput" className="block btn border rounded-lg text-center cursor-pointer py-2 px-3">
               Choose File
               <input id="fileInput" type="file" accept="image/jpeg,image/png" onChange={onChangeHandler} className="invisible w-0 h-0"/>
@@ -142,8 +143,8 @@ const UploadField = ({ error, onChange }) => {
             }
           </div>
         ) : imgPreview ? (
-          <div className="flex justify-center items-center min-w-full h-[300px] border-2 border-dashed rounded-md overflow-hidden">
-            <img src={imgPreview} className="h-full"/>
+          <div className="flex justify-center items-center min-w-full border-2 border-dashed rounded-md">
+            <img src={imgPreview} />
           </div>
         ) : (
           <div className="flex justify-center items-center min-w-full h-[300px]">

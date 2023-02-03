@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Cropper from "react-easy-crop";
 import PropTypes from 'prop-types';
 import Button from "./button";

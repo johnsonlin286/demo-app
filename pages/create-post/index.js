@@ -4,7 +4,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { API } from "../../endpoints/api";
-import { PHOTOS } from "../../endpoints/url";
+// import { PHOTOS } from "../../endpoints/url";
 import decodeBase64Image from '../../utils/decode-base64';
 
 import Header from "../../components/header";

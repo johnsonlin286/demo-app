@@ -332,7 +332,7 @@ const Profile = ({ photosData }) => {
               <h3 className="text-xl font-medium mb-4">Comments</h3>
               <div className="flex items-center mb-4">
                 <Avatar size="sm" shape="circle" border alt={user.name}/>
-                <p className="flex px-3">
+                <p className="flex flex-col px-3">
                   <strong className="inline-block mr-2">{user.name}</strong>
                   {pickedPhotoData.caption}
                 </p>

@@ -12,8 +12,8 @@ const defaultProps = {};
 
 const ThumbnailImg = ({ src, alt, href }) => {
   return (
-    <Link href={href} className="h-[130px] overflow-hidden">
-      <Image src={src} alt={alt} wrapperClassName="relative" imageClassName="absolute aspect-[4/3] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"/>
+    <Link href={href} className="h-[120px] overflow-hidden">
+      <Image src={src} alt={alt} wrapperClassName="relative" imageClassName="absolute aspect-auto left-1/2 -translate-x-1/2"/>
     </Link>
   );
 };
