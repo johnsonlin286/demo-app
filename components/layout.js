@@ -3,6 +3,7 @@ import { AppContext } from '../context';
 import { useRouter } from 'next/router';
 
 import Head from 'next/head'
+import Script from 'next/script';
 import BottomNav from './bottom-nav';
 import BottomSheet from './bottomsheet';
 import Toast from './toast';
@@ -25,19 +26,7 @@ const Layout = ({ children }) => {
         <title>MERN Stack Demo App</title>
         <meta name="description" content="MERN Stack Demo App" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" integrity="sha512-42kB9yDlYiCEfx2xVwq0q7hT4uf26FUgSIZBK8uiaEnTdShXjwr8Ip1V4xGJMg3mHkUt9nNuTDxunHF0/EgxLQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
       </Head>
-      {/* <!-- Google tag (gtag.js) --> */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-JD7YNC2K2M"></script>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-  
-          gtag('config', 'G-JD7YNC2K2M');`
-        }}
-      />
       <main className="md:w-7/12 lg:w-6/12 xl:w-4/12 min-h-screen mx-auto overflow-x-hidden">
         <Toast visible={context.toast.visible} color={context.toast.color} text={context.toast.text}/>
         {
