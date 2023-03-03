@@ -1,9 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context';
 import { useRouter } from 'next/router';
 
 import Head from 'next/head'
-import Script from 'next/script';
 import BottomNav from './bottom-nav';
 import BottomSheet from './bottomsheet';
 import Toast from './toast';
@@ -19,11 +18,19 @@ const defaultProps = {};
 const Layout = ({ children }) => {
   const router = useRouter();
   const context = useContext(AppContext);
+  const [pageTitle, setPageTitle] = useState();
+
+  useEffect(() => {
+    let path = router.asPath;
+    path = path.replaceAll(/[/,?]/g, ' ').split(' ')[1];
+    path = path.replaceAll(/[-]/g, ' ');
+    setPageTitle(path.charAt(0).toUpperCase() + path.slice(1));
+  }, [router]);
   
   return (
     <div>
       <Head>
-        <title>MERN Stack Demo App</title>
+        <title>MERN Stack Demo App{pageTitle ? ` - ${pageTitle}` : ''}</title>
         <meta name="description" content="MERN Stack Demo App" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
