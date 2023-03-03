@@ -28,7 +28,7 @@ const defaultProps = {
   className: ''
 };
 
-const Button = ({ type, size, block, outline, route, onClick, disabled, loading, children }) => {
+const Button = ({ type, size, block, outline, route, onClick, disabled, loading, children, className }) => {
   return (
     <>
       {
