@@ -134,7 +134,7 @@ export default function PageSignup() {
             onChange={(val) => updateFormState('password', val)}
           />
           <div className="text-right">
-            <Button color="primary" size="sm" disabled={loading} loading={loading} className="signup-btn">
+            <Button color="primary" size="sm" disabled={loading} loading={loading}>
               Sign Up
             </Button>
           </div>

@@ -83,6 +83,9 @@ export default function PageSignin() {
       Cookies.set('auth_token', data.token, { expires: expireTime });
       Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: 1 });
       // setLoading(false);
+      window.gtag('event', 'signin', {
+        custom_variable: 'someone signin'
+      });
       router.push(`/profile/${data._id}`);
       context.setToast({
         visible: true,
