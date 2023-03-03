@@ -1,19 +1,19 @@
 import { useContext, useEffect, useState } from "react";
-import { API } from "../../endpoints/api";
-// import { SIGNIN } from "../../endpoints/url";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { API } from "../../endpoints/api";
+import Cookies from "js-cookie";
 import { AppContext } from "../../context";
 
 import Header from "../../components/header";
 import InputField from "../../components/input-field";
-import Button from "../../components/button";
+import Button from '../../components/button';
 import Link from "next/link";
 
-export default function PageSignin() {
+export default function PageSignup() {
   const context = useContext(AppContext);
   const router = useRouter();
   const [formState, setFormState] = useState({
+    name: '',
     email: '',
     password: '',
   });
@@ -44,69 +44,76 @@ export default function PageSignin() {
   const formValidation = (e) => {
     e.preventDefault();
     const err = {};
+    if (!formState.name) {
+      err.name = 'required!';
+    } else delete err.name;
     if (!formState.email) {
       err.email = 'required!';
     } else delete err.email;
     if (!formState.password) {
       err.password = 'required!';
+    } else if (formState.password.length < 6) {
+      err.password = 'min 6 characters!';
     } else delete err.password;
     setErrMsg(err);
     if (Object.keys(err).length > 0) {
       return false;
     }
     formSubmit();
-  };
+  }
 
   const formSubmit = async () => {
     try {
       setLoading(true);
       const reqBody = {
         query: `
-          query Signin($email: String!, $password: String!) {
-            signin(email: $email, password: $password), {
-              _id
-              name
-              email
-              token
+          mutation Signup($name: String!, $email: String!, $password: String!) {
+            signup(userInput: {name: $name, email: $email, password: $password}), {
+              _id name email
             }
           }
         `,
         variables: {
+          name: formState.name,
           email: formState.email,
           password: formState.password
         }
       };
       const response = await API.post(process.env.API_URL, reqBody);
-      const data = response.data.signin;
-      const expireTime = new Date();
-      expireTime.setTime(expireTime.getTime() + 24 * 3600 * 1000);
-      Cookies.set('auth_token', data.token, { expires: expireTime });
-      Cookies.set('user', JSON.stringify({id: data._id, name: data.name, email: data.email}), { expires: 1 });
-      // setLoading(false);
-      router.push(`/profile/${data._id}`);
+      const data = response.data.signup;
+      router.push('/signin');
       context.setToast({
         visible: true,
-        text: `Hi ${data.name}. Welcomeback!`,
+        text: `Your account ${data.email} has been successfully created!`
       });
-    } catch (err) {
+    } catch (error) {
       setLoading(false);
       setErrMsg(current => (
         {
           ...current,
-          global: 'invalid email or password!'
+          global: error.data.errors[0].message
         }
       ));
     }
   }
 
   return (
-    <div className="signin">
-      <Header backBtn title="Sign in"/>
+    <div className="signup">
+      <Header backBtn title={"Sign Up"}/>
       <div className="flex flex-col items-center py-20">
         <form className="w-1/2" onSubmit={formValidation}>
           {
             errMsg.global && <div className="w-full bg-red-100 rounded text-left p-2 mb-4"><p className="text-red-600">{errMsg.global}</p></div>
           }
+          <InputField
+            id="nameInput"
+            label="Full Name"
+            placeholder="Full Name"
+            value={formState.name}
+            error={errMsg.name || ''}
+            className="mb-3"
+            onChange={(val) => updateFormState('name', val)}
+          />
           <InputField
             id="emailInput"
             label="Email"
@@ -128,14 +135,14 @@ export default function PageSignin() {
           />
           <div className="text-right">
             <Button color="primary" size="sm" disabled={loading} loading={loading}>
-              Sign In
+              Sign Up
             </Button>
           </div>
         </form>
         <p className="text-center mt-6">
-          Create new <Link className="text-sky-400 hover:underline" href={'/signup'}>account</Link>
+          Sign in <Link className="text-sky-400 hover:underline" href={'/signin'}>account</Link>
         </p>
       </div>
     </div>
-  );
+  )
 };
