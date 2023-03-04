@@ -83,7 +83,9 @@ export default function PageSignup() {
       const data = response.data.signup;
       const source = Cookies.get('utm_source');
       if (source) {
-        window.gtag('event', 'SignUp', {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: 'SignUp',
           source: source
         });
       }

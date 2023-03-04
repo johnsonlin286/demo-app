@@ -4,7 +4,6 @@ import { API } from '../endpoints/api';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 import Link from 'next/link';
-import Avatar from './avatar';
 import ButtonLike from './button-like';
 import Dropdown from './dropdown';
 import Image from './image';
@@ -50,12 +49,6 @@ const PhotoPreview = ({ photo, canEdit, canDelete, deleteCallback, showComments,
       const likes = [...itemData.likes];
       const isLiked = likes.filter(item => item.user._id === user.id);
       if (isLiked.length > 0) setLiked(true);
-    }
-    if (photo && user) {
-      const authorId = photo.user;
-      if (authorId === user._id) {
-        console.log('is owner of the post');
-      }
     }
   }, [photo, user]);
 
