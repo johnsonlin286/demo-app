@@ -18,19 +18,19 @@ const defaultProps = {};
 const Layout = ({ children }) => {
   const router = useRouter();
   const context = useContext(AppContext);
-  const [pageTitle, setPageTitle] = useState();
+  const [pageTitle, setPageTitle] = useState('MERN Stack Demo App');
 
   useEffect(() => {
     let path = router.asPath;
     path = path.replaceAll(/[/,?]/g, ' ').split(' ')[1];
     path = path.replaceAll(/[-]/g, ' ');
-    setPageTitle(path.charAt(0).toUpperCase() + path.slice(1));
+    setPageTitle(`MERN Stack Demo App${path ? ` - ${path.charAt(0).toUpperCase() + path.slice(1)}` : ''}`);
   }, [router]);
   
   return (
     <div>
       <Head>
-        <title>MERN Stack Demo App{pageTitle ? ` - ${pageTitle}` : ''}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content="MERN Stack Demo App" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
           children
         }
         {
-          router.asPath !== '/signin' && router.asPath !== '/signout' && <BottomNav/>
+          router.asPath !== '/signup' && router.asPath !== '/signin' && router.asPath !== '/signout' && <BottomNav/>
         }
         <BottomSheet 
           open={context.about}

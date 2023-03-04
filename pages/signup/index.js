@@ -81,6 +81,12 @@ export default function PageSignup() {
       };
       const response = await API.post(process.env.API_URL, reqBody);
       const data = response.data.signup;
+      const source = Cookies.get('utm_source');
+      if (source) {
+        window.gtag('event', 'SignUp', {
+          source: source
+        });
+      }
       router.push('/signin');
       context.setToast({
         visible: true,
