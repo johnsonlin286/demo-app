@@ -1491,6 +1491,13 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@iconify/icons-ic@^1.2.13":
+  version "1.2.13"
+  resolved "https://registry.npmjs.org/@iconify/icons-ic/-/icons-ic-1.2.13.tgz"
+  integrity sha512-TphrhwOvgd7CTmUhz6jgXF+SPnMtvTm03bZsAYbny2kwq4zlkhr9e16YEyPGMvKhjtTqNooA3iZ9Wa+pZ8moXQ==
+  dependencies:
+    "@iconify/types" "*"
+
 "@iconify/icons-ion@^1.2.4":
   version "1.2.4"
   resolved "https://registry.npmjs.org/@iconify/icons-ion/-/icons-ion-1.2.4.tgz"
