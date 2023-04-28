@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 // import Cookies from "js-cookie";
 import { API } from "../../endpoints/api";
@@ -41,7 +41,7 @@ const Profile = ({ photosData }) => {
     }
   }, [photosData]);
 
-  const fetchUserData = useCallback(async () => {
+  const fetchUserData = async () => {
     const reqBody = {
       query: `
         query profile($userId: ID!){
@@ -59,7 +59,7 @@ const Profile = ({ photosData }) => {
     const response = await API.post(process.env.API_URL, reqBody);
     const result = response.data.profile;
     setUser({ id: result._id, name: result.name, email: result.email });
-  }, [router]);
+  };
 
   const fetchUserPhotos = async () => {
     try {
