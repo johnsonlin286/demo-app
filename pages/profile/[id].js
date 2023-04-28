@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import { API } from "../../endpoints/api";
 // import { PHOTOS, COMMENT } from "../../endpoints/url";
 import Header from "../../components/header";
@@ -30,12 +30,8 @@ const Profile = ({ photosData }) => {
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
-    const user = Cookies.get("user");
-    if (user) {
-      setUser(JSON.parse(user));
-    }
     fetchUserData();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (photosData) {
@@ -45,7 +41,7 @@ const Profile = ({ photosData }) => {
     }
   }, [photosData]);
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     const reqBody = {
       query: `
         query profile($userId: ID!){
@@ -63,7 +59,7 @@ const Profile = ({ photosData }) => {
     const response = await API.post(process.env.API_URL, reqBody);
     const result = response.data.profile;
     setUser({ id: result._id, name: result.name, email: result.email });
-  };
+  }, [router]);
 
   const fetchUserPhotos = async () => {
     try {
@@ -276,7 +272,7 @@ const Profile = ({ photosData }) => {
 
   return (
     <div className="dashboard">
-      <Header backBtn backRoute={"/"} fixed title={user && user.name} />
+      <Header backBtn fixed title={user && user.name} />
       <div
         className={`flex flex-col min-h-screen pb-20${
           data && !data.length > 0 ? " justify-between" : ""
