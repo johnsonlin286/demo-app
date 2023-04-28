@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 import { API } from "../../endpoints/api";
 // import { PHOTOS, COMMENT } from "../../endpoints/url";
 import Header from "../../components/header";
@@ -16,6 +16,7 @@ import CommentsSection from "../../components/comments-section";
 
 const Profile = ({ photosData }) => {
   const router = useRouter();
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [user, setUser] = useState();
   const [data, setData] = useState();
   const [totalPost, setTotalPost] = useState(0);
@@ -30,6 +31,13 @@ const Profile = ({ photosData }) => {
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
+    let userCookies = Cookies.get("user");
+    if (userCookies) {
+      userCookies = JSON.parse(userCookies);
+      if (router && router.query.id === userCookies.id) {
+        setIsOwnProfile(true);
+      }
+    }
     fetchUserData();
   }, [router]);
 
@@ -102,6 +110,9 @@ const Profile = ({ photosData }) => {
   };
 
   const showConfirmWindow = (photoId) => {
+    if (!isOwnProfile) {
+      return;
+    }
     setPickedPhotoId(photoId);
     setShowConfirm(true);
   };
@@ -293,8 +304,8 @@ const Profile = ({ photosData }) => {
               <div className="border-b pb-4 mb-4" key={i}>
                 <PhotoPreview
                   photo={item}
-                  canEdit
-                  canDelete
+                  canEdit={isOwnProfile}
+                  canDelete={isOwnProfile}
                   deleteCallback={showConfirmWindow}
                   showComments
                   commentsCallback={fetchComments}
