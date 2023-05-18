@@ -1,11 +1,11 @@
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { API } from "../../endpoints/api";
 import Cookies from "js-cookie";
 import Header from "../../components/header";
 import PhotoPreview from "../../components/photo-preview";
-import { Icon } from '@iconify/react';
-import loadingIcon from '@iconify/icons-mdi/loading';
+import { Icon } from "@iconify/react";
+import loadingIcon from "@iconify/icons-mdi/loading";
 import BottomSheet from "../../components/bottomsheet";
 import Avatar from "../../components/avatar";
 import CommentsSection from "../../components/comments-section";
@@ -25,7 +25,7 @@ const Photo = ({ photoData }) => {
   const [fetchingComments, setFetchingComments] = useState(false);
 
   useEffect(() => {
-    const user = Cookies.get('user');
+    const user = Cookies.get("user");
     if (user) setUserData(JSON.parse(user));
   }, []);
 
@@ -39,15 +39,15 @@ const Photo = ({ photoData }) => {
 
   useEffect(() => {
     if (photoId) fetchPhotos();
-  }, [photoId])
+  }, [photoId]);
 
   const fetchPhotos = async () => {
     try {
       setFetchingPhotos(true);
       const reqBody = {
         query: `
-          query photos($isAuth: Boolean!, $exclude: ID, $skip: Float, $limit: Float) {
-            photos(isAuth: $isAuth, exclude: $exclude, skip: $skip, limit: $limit), {
+          query photos($exclude: ID, $skip: Float, $limit: Float) {
+            photos(exclude: $exclude, skip: $skip, limit: $limit), {
               data {
                 _id
                 imageUrl
@@ -68,35 +68,30 @@ const Photo = ({ photoData }) => {
           }
         `,
         variables: {
-          isAuth: userData ? true : false,
           exclude: photoId,
           skip: data.length - 1,
-          limit: 2
+          limit: 2,
+        },
+      };
+      await API.post(process.env.API_URL, reqBody).then((response) => {
+        const result = response.data.photos;
+        if (result.data && result.data.length > 0) {
+          setData((prev) => [...prev, ...result.data]);
         }
-      }
-      await API.post(process.env.API_URL, reqBody)
-       .then(response => {
-          const result = response.data.photos;
-          if (result.data && result.data.length > 0) {
-            setData(prev => [
-              ...prev,
-              ...result.data,
-            ]);
-          }
-          setTotalPost(result.total + 1);
-          setFetchingPhotos(false);
-       });
+        setTotalPost(result.total + 1);
+        setFetchingPhotos(false);
+      });
     } catch (error) {
       setFetchingPhotos(false);
       console.log(error);
       throw error;
     }
-  }
+  };
 
   const fetchComments = async (photoId) => {
     setShowComments(true);
     setPickedPhotoId(photoId);
-    const photoData = data.find(photo => photo._id === photoId);
+    const photoData = data.find((photo) => photo._id === photoId);
     setPickedPhotoData(photoData);
     try {
       setFetchingComments(true);
@@ -139,8 +134,8 @@ const Photo = ({ photoData }) => {
         variables: {
           photoId: photoId,
           skip: 0,
-          limit: 4
-        }
+          limit: 4,
+        },
       };
       const response = await API.post(process.env.API_URL, reqBody);
       const result = response.data.comments;
@@ -151,7 +146,7 @@ const Photo = ({ photoData }) => {
       console.log(error);
       setFetchingComments(false);
     }
-  }
+  };
 
   const fetchMoreComments = async () => {
     if (commentsData.length < totalComments) {
@@ -189,20 +184,17 @@ const Photo = ({ photoData }) => {
           variables: {
             photoId: pickedPhotoId,
             skip: commentsData.length,
-            limit: 4
-          }
-        }; 
+            limit: 4,
+          },
+        };
         const response = await API.post(process.env.API_URL, reqBody);
         const result = response.data.comments;
-        setCommentsData(prev => [
-          ...prev,
-          ...result.data
-        ]);
+        setCommentsData((prev) => [...prev, ...result.data]);
       } catch (error) {
-        throw error
+        throw error;
       }
     }
-  }
+  };
 
   const dismissBottomSheet = () => {
     // setPickedPhotoId();
@@ -213,72 +205,81 @@ const Photo = ({ photoData }) => {
 
   const windowScroll = () => {
     let docOffsetheight = document.body.offsetHeight;
-    if ((window.innerHeight + window.scrollY) >= docOffsetheight) {
+    if (window.innerHeight + window.scrollY >= docOffsetheight) {
       if (data && data.length < totalPost && !fetchingPhotos) fetchPhotos();
     }
   };
 
   useEffect(() => {
-    document.addEventListener('scroll', windowScroll);
-    return () => document.removeEventListener('scroll', windowScroll);
+    document.addEventListener("scroll", windowScroll);
+    return () => document.removeEventListener("scroll", windowScroll);
   }, [windowScroll]);
 
   return (
     <div className="photo">
-      <Header backBtn fixed title={"Explore"}/>
+      <Header backBtn fixed title={"Explore"} />
       <div className="flex flex-col min-h-screen pt-14 pb-20">
         <div className="px-5 md:px-0">
-          {
-            data && data.length > 0 ? data.map((item, i) => (
-              <div className="border-b pb-4 mb-4" key={i}>
-                <PhotoPreview
-                  photo={item}
-                  showComments
-                  commentsCallback={fetchComments}
-                />
-              </div>
-            )) : null
-          }
-          {
-          fetchingPhotos ? (
-              <div className="flex justify-center items-center py-5">
-                <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
-              </div>
-            ) : null
-          }
+          {data && data.length > 0
+            ? data.map((item, i) => (
+                <div className="border-b pb-4 mb-4" key={i}>
+                  <PhotoPreview
+                    photo={item}
+                    showComments
+                    commentsCallback={fetchComments}
+                  />
+                </div>
+              ))
+            : null}
+          {fetchingPhotos ? (
+            <div className="flex justify-center items-center py-5">
+              <Icon
+                icon={loadingIcon}
+                className="inline-block animate-spin text-lg align-text-top"
+              />{" "}
+              fetching...
+            </div>
+          ) : null}
         </div>
       </div>
       <BottomSheet open={showComments} onDismiss={dismissBottomSheet}>
-        {
-          pickedPhotoData && commentsData && (
-            <>
-              <h3 className="text-xl font-medium mb-4">Comments</h3>
-              <div className="flex items-center mb-4">
-                <Avatar size="sm" shape="circle" border alt={pickedPhotoData.user.name}/>
-                <p className="flex flex-col px-3">
-                  <strong className="inline-block mr-2">{pickedPhotoData.user.name}</strong>
-                  {pickedPhotoData.caption}
-                </p>
-              </div>
-              <CommentsSection
-                photoId={pickedPhotoId}
-                comments={commentsData}
-                total={totalComments}
-                loadMoreCallback={fetchMoreComments}
+        {pickedPhotoData && commentsData && (
+          <>
+            <h3 className="text-xl font-medium mb-4">Comments</h3>
+            <div className="flex items-center mb-4">
+              <Avatar
+                size="sm"
+                shape="circle"
+                border
+                alt={pickedPhotoData.user.name}
               />
-            </>
-          )
-        }
-        {
-          fetchingComments ? (
-            <div className="flex min-w-full min-h-full justify-center items-center">
-              <Icon icon={loadingIcon} className="inline-block animate-spin text-lg align-text-top"/> fetching...
+              <p className="flex flex-col px-3">
+                <strong className="inline-block mr-2">
+                  {pickedPhotoData.user.name}
+                </strong>
+                {pickedPhotoData.caption}
+              </p>
             </div>
-          ) : null
-        }
+            <CommentsSection
+              photoId={pickedPhotoId}
+              comments={commentsData}
+              total={totalComments}
+              loadMoreCallback={fetchMoreComments}
+            />
+          </>
+        )}
+        {fetchingComments ? (
+          <div className="flex min-w-full min-h-full justify-center items-center">
+            <Icon
+              icon={loadingIcon}
+              className="inline-block animate-spin text-lg align-text-top"
+            />{" "}
+            fetching...
+          </div>
+        ) : null}
       </BottomSheet>
     </div>
-  )
+  );
 };
 
 export default Photo;
@@ -286,47 +287,40 @@ export default Photo;
 export async function getStaticPaths() {
   const reqBody = {
     query: `
-      query photos($isAuth: Boolean!) {
-        photos(isAuth: $isAuth), {
+      query {
+        photos, {
           data {
             _id
           }
         }
       }
     `,
-    variables: {
-      isAuth: false,
-    }
-  }
+  };
   const response = await API.post(process.env.API_URL, reqBody);
   const result = response.data.photos.data;
-  const paths = result.map(item => {
+  const paths = result.map((item) => {
     return {
-      params: {id: item._id}
-    }
+      params: { id: item._id },
+    };
   });
   return {
     paths: paths,
-    fallback: true
-  }
+    fallback: true,
+  };
 }
 
-export async function getStaticProps (context) {
+export async function getStaticProps(context) {
   const { id } = context.params;
   const reqBody = {
     query: `
       query photo($photoId: ID!) {
         photo(photoId: $photoId), {
-          _id
-          imageUrl
-          caption
+          _id imageUrl caption
           user {
-            _id
-            name
+            _id name
           }
           likes {
-            _id
-            user {
+            _id user {
               _id
             }
           }
@@ -335,13 +329,13 @@ export async function getStaticProps (context) {
     `,
     variables: {
       photoId: id,
-    }
+    },
   };
   const response = await API.post(process.env.API_URL, reqBody);
   const result = response.data.photo;
   return {
     props: {
       photoData: result,
-    }
-  }
+    },
+  };
 }
