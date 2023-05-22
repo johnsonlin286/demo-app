@@ -14,11 +14,11 @@
     "firebase": "^9.15.0",
     "html-react-parser": "^3.0.6",
     "js-cookie": "^3.0.1",
-    "next": "13.0.7",
+    "next": "^13.4.3",
     "next-pwa": "^5.6.0",
     "nprogress": "^0.2.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-easy-crop": "^4.6.3",
     "react-lazy-load-image-component": "^1.5.6",
     "react-spring-bottom-sheet": "^3.5.0-alpha.0"
@@ -29,11 +29,14 @@
     "@iconify/icons-mdi": "^1.2.36",
     "@iconify/react": "^4.0.1",
     "@tailwindcss/forms": "^0.5.3",
+    "@types/react": "^18.2.6",
     "autoprefixer": "^10.4.13",
     "eslint": "8.30.0",
     "eslint-config-next": "13.0.7",
     "postcss": "^8.4.20",
+    "prettier-plugin-tailwindcss": "^0.3.0",
     "sass": "^1.57.1",
-    "tailwindcss": "^3.2.4"
+    "tailwindcss": "^3.2.4",
+    "typescript": "^5.0.4"
   }
 }
