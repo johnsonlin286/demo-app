@@ -1,6 +1,10 @@
 import API from "./config";
 
-export const fetchAllPosts = async (exclude?: string, skip?: number) => {
+export const fetchAllPosts = async (
+  exclude?: string,
+  skip?: number,
+  token?: string
+) => {
   return new Promise(async (resolve, reject) => {
     const reqBody = {
       query: `
@@ -25,7 +29,7 @@ export const fetchAllPosts = async (exclude?: string, skip?: number) => {
         limit: 20,
       },
     };
-    return await API(reqBody)
+    return await API(reqBody, token)
       .then((response) => {
         resolve(response);
       })

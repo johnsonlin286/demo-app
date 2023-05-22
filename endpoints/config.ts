@@ -9,7 +9,7 @@ type reqbodyType = {
   variables: any;
 };
 
-export default function API(reqbody: reqbodyType) {
+export default function API(reqbody: reqbodyType, token?: string) {
   return new Promise(async (resolve, reject) => {
     let cookie = Cookies.get("user");
     let storage: UserType | undefined;
@@ -21,7 +21,11 @@ export default function API(reqbody: reqbodyType) {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          Authorization: storage ? `Bearer ${storage?.token}` : null,
+          Authorization: storage
+            ? `Bearer ${storage?.token}`
+            : token
+            ? `Bearer ${token}`
+            : null,
         },
       })
       .then((response) => {

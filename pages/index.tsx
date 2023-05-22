@@ -110,9 +110,10 @@ export default function Home({ photosData, error }: Props) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(context: { req: { cookies: { auth_token: undefined; }; }; }) {
   try {
-    const result: any = await fetchAllPosts(undefined, 0);
+    const token = context.req.cookies.auth_token || undefined;
+    const result: any = await fetchAllPosts(undefined, 0, token);
     return {
       props: {
         photosData: result.photos
