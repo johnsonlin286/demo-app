@@ -6,7 +6,7 @@ const API_URL: any = process.env.API_URL;
 
 type reqbodyType = {
   query: string;
-  variables: any;
+  variables: object;
 };
 
 export default function API(reqbody: reqbodyType, token?: string) {

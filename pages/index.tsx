@@ -16,7 +16,7 @@ type Props = {
 
 export default function Home({ photosData, error }: Props) {
   const [data, setData] = useState<Array<PhotoType>>([]);
-  const [totalPost, setTotalPost] = useState(0);
+  const [totalPost, setTotalPost] = useState(10);
   const [fetchingData, setFetchingData] = useState(true);
   const [pagination, setPagination] = useState(false);
   const observerOptions = useMemo(() => {
@@ -44,13 +44,13 @@ export default function Home({ photosData, error }: Props) {
 
   const fetchPhotos = async () => {
     if (data?.length >= totalPost || fetchingData) {
-      setPagination(false);
       return;
     }
     setFetchingData(true);
+    setPagination(true);
     try {
       const result: any = await fetchAllPosts(undefined, data?.length);
-      setData((prev) => [...prev, ...result.data]);
+      setData((prev) => [...prev, ...result.data.reverse()]);
     } catch (error) {
       console.log(error);
     }
@@ -104,7 +104,7 @@ export default function Home({ photosData, error }: Props) {
             <p>No post found! Start post your image here...</p>
             <Icon icon={arrowDownOutline} width="38" height="38" />
           </div>
-        ) : pagination && <div id="paginationElm" className="w-full h-1 bg-black" />}
+        ) : pagination && <div id="paginationElm" className="w-full h-1" />}
       </div>
     </div>
   );
